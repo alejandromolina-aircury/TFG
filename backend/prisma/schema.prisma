@@ -1,0 +1,127 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- ENUMS (Para restringir valores y evitar errores) ---
+
+enum Role {
+  USER      // Cliente que se registra
+  ADMIN     // Tú (Gestor total)
+  STAFF     // Camareros (Solo ver/modificar estados)
+}
+
+enum Language {
+  ES
+  EN
+  FR
+}
+
+enum BookingStatus {
+  PENDING       // Creada, esperando confirmación (si aplica)
+  CONFIRMED     // Confirmada por sistema/email
+  RECONFIRMED   // Cliente hizo click en "Confirmar asistencia" 24h antes
+  SEATED        // Cliente ya está en la mesa
+  COMPLETED     // Comieron y pagaron
+  CANCELLED     // Cancelada por cliente o restaurante
+  NO_SHOW       // No aparecieron (importante para Blacklist)
+}
+
+// --- MODELOS ---
+
+// CRM DE CLIENTES
+model Customer {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  phone         String
+  firstName     String
+  lastName      String
+  language      Language  @default(ES) // Para enviar emails en su idioma
+  
+  // Datos CRM
+  allergens     String[]  // Ej: ["Gluten", "Lactosa"] (Array nativo de Postgres)
+  preferences   String?   // Ej: "Prefiere mesa redonda"
+  birthday      DateTime? // Para emails de felicitación
+  
+  // Métricas
+  totalVisits   Int       @default(0)
+  isVip         Boolean   @default(false)
+  isBlacklisted Boolean   @default(false) // Si hace muchos No-Show
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bookings      Booking[]
+  waitlist      Waitlist[]
+}
+
+// GESTIÓN DE ESPACIO
+model Zone {
+  id          Int      @id @default(autoincrement())
+  name        String   // Ej: "Terraza", "Salón Principal"
+  isActive    Boolean  @default(true) // Para cerrar una zona por obras
+  tables      Table[]
+}
+
+model Table {
+  id          Int      @id @default(autoincrement())
+  name        String   // Ej: "Mesa 1", "T-12"
+  minCapacity Int      // Para no sentar a 2 pax en mesa de 8
+  maxCapacity Int
+  isActive    Boolean  @default(true)
+  
+  zoneId      Int
+  zone        Zone     @relation(fields: [zoneId], references: [id])
+  
+  bookings    Booking[]
+}
+
+// MOTOR DE RESERVAS
+model Booking {
+  id              String        @id @default(uuid())
+  date            DateTime      // Fecha y Hora de inicio
+  duration        Int           @default(120) // Duración en minutos (por defecto 2h)
+  pax             Int           // Número de personas
+  status          BookingStatus @default(PENDING)
+  specialRequests String?       // Notas de la reserva
+  
+  // Relaciones
+  customerId      String
+  customer        Customer      @relation(fields: [customerId], references: [id])
+  
+  tableId         Int?          // Puede ser null si es una reserva online sin mesa asignada aún
+  table           Table?        @relation(fields: [tableId], references: [id])
+
+  // Gestión de Emails Automáticos
+  confirmationToken String?     // Token único para confirmar email
+  reconfirmToken    String?     // Token para reconfirmar asistencia 24h antes
+  
+  emailSentAt       DateTime?   // Cuándo se envió el último email
+  reconfirmedAt     DateTime?   // Cuándo el cliente reconfirmó
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Índices para que el buscador de disponibilidad sea ULTRA rápido
+  @@index([date, status])
+}
+
+// LISTA DE ESPERA
+model Waitlist {
+  id          String   @id @default(uuid())
+  date        DateTime // Día y hora deseada
+  pax         Int
+  notes       String?
+  isResolved  Boolean  @default(false) // Si ya se le llamó o consiguió mesa
+  
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
