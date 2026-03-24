@@ -1,0 +1,402 @@
+// backend/src/services/customerService.js
+
+const prisma = require('../config/database');
+const { BusinessError, ValidationError } = require('../middleware/errorHandler');
+const { BLACKLIST } = require('../config/constants');
+
+/**
+ * Busca o crea un cliente
+ * Lógica principal para reservas: busca por email, si no existe lo crea
+ */
+async function findOrCreateCustomer(email, customerData) {
+  const { firstName, lastName, phone, allergens, specialRequests } = customerData;
+  
+  // Validar email
+  if (!email || !isValidEmail(email)) {
+    throw new ValidationError('Email inválido');
+  }
+  
+  // Buscar cliente existente
+  let customer = await prisma.customer.findUnique({
+    where: { email: email.toLowerCase().trim() },
+    include: {
+      bookings: {
+        orderBy: { date: 'desc' },
+        take: 5
+      }
+    }
+  });
+  
+  if (customer) {
+    // Cliente existente: Actualizar datos si es necesario
+    const updateData = {
+      totalVisits: { increment: 1 }
+    };
+    
+    // Actualizar datos si se proporcionan nuevos
+    if (firstName && firstName !== customer.firstName) {
+      updateData.firstName = firstName;
+    }
+    if (lastName && lastName !== customer.lastName) {
+      updateData.lastName = lastName;
+    }
+    if (phone && phone !== customer.phone) {
+      updateData.phone = phone;
+    }
+    
+    // Actualizar alergias si se proporcionan nuevas
+    if (allergens && allergens.length > 0) {
+      // Combinar con alergias existentes sin duplicar
+      const existingAllergens = customer.allergens || [];
+      const combinedAllergens = [...new Set([...existingAllergens, ...allergens])];
+      updateData.allergens = combinedAllergens;
+    }
+    
+    customer = await prisma.customer.update({
+      where: { id: customer.id },
+      data: updateData,
+      include: {
+        bookings: {
+          orderBy: { date: 'desc' },
+          take: 5
+        }
+      }
+    });
+    
+    return {
+      customer,
+      isNew: false,
+      message: `Bienvenido de nuevo, ${customer.firstName}! Esta es tu visita número ${customer.totalVisits}`
+    };
+  }
+  
+  // Cliente nuevo: Crear
+  customer = await prisma.customer.create({
+    data: {
+      email: email.toLowerCase().trim(),
+      firstName: firstName || 'Cliente',
+      lastName: lastName || '',
+      phone: phone || '',
+      allergens: allergens || [],
+      totalVisits: 1
+    }
+  });
+  
+  return {
+    customer,
+    isNew: true,
+    message: `¡Bienvenido, ${customer.firstName}!`
+  };
+}
+
+/**
+ * Obtiene el perfil completo de un cliente
+ */
+async function getCustomerProfile(customerId) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      bookings: {
+        orderBy: { date: 'desc' },
+        include: {
+          table: { include: { zone: true } }
+        }
+      },
+      notes: {
+        orderBy: { createdAt: 'desc' }
+      },
+      waitlist: {
+        where: { isResolved: false },
+        orderBy: { createdAt: 'desc' }
+      }
+    }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  // Calcular estadísticas
+  const stats = calculateCustomerStats(customer);
+  
+  return {
+    ...customer,
+    stats
+  };
+}
+
+/**
+ * Calcula estadísticas de un cliente
+ */
+function calculateCustomerStats(customer) {
+  const bookings = customer.bookings || [];
+  
+  const completed = bookings.filter(b => b.status === 'COMPLETED').length;
+  const cancelled = bookings.filter(b => b.status === 'CANCELLED').length;
+  const noShows = bookings.filter(b => b.status === 'NO_SHOW').length;
+  const upcoming = bookings.filter(b => 
+    ['PENDING', 'CONFIRMED', 'RECONFIRMED'].includes(b.status) &&
+    new Date(b.date) > new Date()
+  ).length;
+  
+  // Calcular fidelidad (% de reservas completadas)
+  const totalRelevant = completed + noShows;
+  const loyaltyRate = totalRelevant > 0 
+    ? Math.round((completed / totalRelevant) * 100) 
+    : 100;
+  
+  // Calcular frecuencia (días entre visitas)
+  let avgDaysBetweenVisits = 0;
+  if (completed >= 2) {
+    const completedBookings = bookings
+      .filter(b => b.status === 'COMPLETED')
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    let totalDays = 0;
+    for (let i = 0; i < completedBookings.length - 1; i++) {
+      const diff = new Date(completedBookings[i].date) - new Date(completedBookings[i + 1].date);
+      totalDays += Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+    avgDaysBetweenVisits = Math.round(totalDays / (completedBookings.length - 1));
+  }
+  
+  return {
+    totalBookings: bookings.length,
+    completed,
+    cancelled,
+    noShows,
+    upcoming,
+    loyaltyRate,
+    avgDaysBetweenVisits,
+    riskLevel: noShows >= BLACKLIST.NO_SHOW_THRESHOLD ? 'HIGH' : noShows > 0 ? 'MEDIUM' : 'LOW'
+  };
+}
+
+/**
+ * Actualiza el perfil de un cliente
+ */
+async function updateCustomerProfile(customerId, updateData) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  const updated = await prisma.customer.update({
+    where: { id: customerId },
+    data: {
+      ...updateData,
+      updatedAt: new Date()
+    }
+  });
+  
+  return updated;
+}
+
+/**
+ * Añade una nota sobre un cliente
+ */
+async function addCustomerNote(customerId, noteText, createdBy) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  const note = await prisma.customerNote.create({
+    data: {
+      customerId,
+      note: noteText,
+      createdBy
+    }
+  });
+  
+  return note;
+}
+
+/**
+ * Gestiona etiquetas de un cliente (VIP, preferencias, etc.)
+ */
+async function manageCustomerTags(customerId, tags, action = 'SET') {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  let newTags = [];
+  
+  switch (action) {
+    case 'SET':
+      newTags = tags;
+      break;
+    case 'ADD':
+      newTags = [...new Set([...(customer.tags || []), ...tags])];
+      break;
+    case 'REMOVE':
+      newTags = (customer.tags || []).filter(tag => !tags.includes(tag));
+      break;
+    default:
+      throw new ValidationError('Acción inválida: usa SET, ADD o REMOVE');
+  }
+  
+  const updated = await prisma.customer.update({
+    where: { id: customerId },
+    data: { tags: newTags }
+  });
+  
+  return updated;
+}
+
+/**
+ * Marca/desmarca un cliente en la lista negra
+ */
+async function toggleBlacklist(customerId, reason = null, blacklist = true) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: { bookings: true }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  const updated = await prisma.customer.update({
+    where: { id: customerId },
+    data: {
+      isBlacklisted: blacklist,
+      blacklistReason: blacklist ? reason : null
+    }
+  });
+  
+  // Si se añade a la blacklist, añadir tag automático
+  if (blacklist) {
+    await manageCustomerTags(customerId, ['BLACKLIST'], 'ADD');
+  } else {
+    await manageCustomerTags(customerId, ['BLACKLIST'], 'REMOVE');
+  }
+  
+  return {
+    customer: updated,
+    message: blacklist 
+      ? `Cliente añadido a la lista negra: ${reason}` 
+      : 'Cliente eliminado de la lista negra'
+  };
+}
+
+/**
+ * Marca un cliente como VIP
+ */
+async function toggleVIP(customerId, isVip = true) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  });
+  
+  if (!customer) {
+    throw new BusinessError('Cliente no encontrado', 'NOT_FOUND', 404);
+  }
+  
+  const updated = await prisma.customer.update({
+    where: { id: customerId },
+    data: { isVip }
+  });
+  
+  // Gestionar tag VIP
+  if (isVip) {
+    await manageCustomerTags(customerId, ['VIP'], 'ADD');
+  } else {
+    await manageCustomerTags(customerId, ['VIP'], 'REMOVE');
+  }
+  
+  return updated;
+}
+
+/**
+ * Busca clientes por varios criterios
+ */
+async function searchCustomers(searchTerm, filters = {}) {
+  const whereClause = {};
+  
+  // Búsqueda por término (nombre, email, teléfono)
+  if (searchTerm) {
+    whereClause.OR = [
+      { firstName: { contains: searchTerm, mode: 'insensitive' } },
+      { lastName: { contains: searchTerm, mode: 'insensitive' } },
+      { email: { contains: searchTerm, mode: 'insensitive' } },
+      { phone: { contains: searchTerm } }
+    ];
+  }
+  
+  // Filtros adicionales
+  if (filters.isVip !== undefined) {
+    whereClause.isVip = filters.isVip;
+  }
+  
+  if (filters.isBlacklisted !== undefined) {
+    whereClause.isBlacklisted = filters.isBlacklisted;
+  }
+  
+  if (filters.tags && filters.tags.length > 0) {
+    whereClause.tags = { hasSome: filters.tags };
+  }
+  
+  const customers = await prisma.customer.findMany({
+    where: whereClause,
+    include: {
+      bookings: {
+        take: 1,
+        orderBy: { date: 'desc' }
+      },
+      _count: {
+        select: { bookings: true }
+      }
+    },
+    orderBy: { totalVisits: 'desc' },
+    take: filters.limit || 50
+  });
+  
+  return customers;
+}
+
+/**
+ * Obtiene el historial de reservas de un cliente
+ */
+async function getCustomerHistory(customerId, limit = 20) {
+  const bookings = await prisma.booking.findMany({
+    where: { customerId },
+    include: {
+      table: { include: { zone: true } }
+    },
+    orderBy: { date: 'desc' },
+    take: limit
+  });
+  
+  return bookings;
+}
+
+/**
+ * Valida formato de email
+ */
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+module.exports = {
+  findOrCreateCustomer,
+  getCustomerProfile,
+  updateCustomerProfile,
+  addCustomerNote,
+  manageCustomerTags,
+  toggleBlacklist,
+  toggleVIP,
+  searchCustomers,
+  getCustomerHistory,
+  calculateCustomerStats
+};

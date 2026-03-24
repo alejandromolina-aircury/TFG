@@ -9,12 +9,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// --- ENUMS (Para restringir valores y evitar errores) ---
+// --- ENUMS ---
 
-enum Role {
-  USER      // Cliente que se registra
-  ADMIN     // Tú (Gestor total)
-  STAFF     // Camareros (Solo ver/modificar estados)
+enum StaffRole {
+  ADMIN
+  STAFF
 }
 
 enum Language {
@@ -24,104 +23,226 @@ enum Language {
 }
 
 enum BookingStatus {
-  PENDING       // Creada, esperando confirmación (si aplica)
-  CONFIRMED     // Confirmada por sistema/email
-  RECONFIRMED   // Cliente hizo click en "Confirmar asistencia" 24h antes
-  SEATED        // Cliente ya está en la mesa
-  COMPLETED     // Comieron y pagaron
-  CANCELLED     // Cancelada por cliente o restaurante
-  NO_SHOW       // No aparecieron (importante para Blacklist)
+  PENDING
+  CONFIRMED
+  RECONFIRMED
+  SEATED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum BookingSource {
+  WEB          // Reserva online del cliente
+  PHONE        // Llamada telefónica
+  WALK_IN      // Pasante (sin reserva previa)
+  BACKOFFICE   // Creada desde panel de gestión
 }
 
 // --- MODELOS ---
 
-// CRM DE CLIENTES
+// 🔐 PERSONAL DEL RESTAURANTE (Login)
+model Staff {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         StaffRole @default(STAFF)
+  isActive     Boolean   @default(true)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([email])
+}
+
+// 👤 CRM DE CLIENTES
 model Customer {
   id            String    @id @default(uuid())
   email         String    @unique
   phone         String
   firstName     String
   lastName      String
-  language      Language  @default(ES) // Para enviar emails en su idioma
+  language      Language  @default(ES)
   
   // Datos CRM
-  allergens     String[]  // Ej: ["Gluten", "Lactosa"] (Array nativo de Postgres)
-  preferences   String?   // Ej: "Prefiere mesa redonda"
-  birthday      DateTime? // Para emails de felicitación
+  allergens     String[]  // Array nativo de Postgres: ["Gluten", "Lactosa"]
+  tags          String[]  // ["VIP", "Cumpleaños"]
+  preferences   String?   // Notas generales
+
+  birthday      DateTime?
   
   // Métricas
   totalVisits   Int       @default(0)
+  totalNoShows  Int       @default(0)
   isVip         Boolean   @default(false)
-  isBlacklisted Boolean   @default(false) // Si hace muchos No-Show
+  isBlacklisted Boolean   @default(false)
+  blacklistReason String?
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Relaciones
   bookings      Booking[]
   waitlist      Waitlist[]
+  notes         CustomerNote[]
+
+  @@index([email])
+  @@index([phone])
 }
 
-// GESTIÓN DE ESPACIO
+// 📝 Notas del Staff sobre Clientes
+model CustomerNote {
+  id          String   @id @default(uuid())
+  note        String
+  createdBy   String   // Nombre del staff
+  
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
+}
+
+// 🏢 GESTIÓN DE ESPACIO
+
 model Zone {
-  id          Int      @id @default(autoincrement())
-  name        String   // Ej: "Terraza", "Salón Principal"
-  isActive    Boolean  @default(true) // Para cerrar una zona por obras
+  id          Int       @id @default(autoincrement())
+  name        String    // "Salón Principal"
+  description String?
+  isActive    Boolean   @default(true)
+  displayOrder Int      @default(0)
+  
   tables      Table[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Table {
-  id          Int      @id @default(autoincrement())
-  name        String   // Ej: "Mesa 1", "T-12"
-  minCapacity Int      // Para no sentar a 2 pax en mesa de 8
-  maxCapacity Int
-  isActive    Boolean  @default(true)
+  id              Int      @id @default(autoincrement())
+  name            String   // "Mesa 1", "Mesa A-2"
+  minCapacity     Int
+  maxCapacity     Int
+  isActive        Boolean  @default(true)
   
-  zoneId      Int
-  zone        Zone     @relation(fields: [zoneId], references: [id])
+  zoneId          Int
+  zone            Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
   
-  bookings    Booking[]
+  bookings        Booking[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([zoneId])
+  @@index([isActive])
 }
 
-// MOTOR DE RESERVAS
+// 🎫 MOTOR DE RESERVAS
+
 model Booking {
   id              String        @id @default(uuid())
-  date            DateTime      // Fecha y Hora de inicio
-  duration        Int           @default(120) // Duración en minutos (por defecto 2h)
-  pax             Int           // Número de personas
+  date            DateTime      // Fecha y hora de inicio
+  duration        Int           @default(120) // Minutos
+  pax             Int
   status          BookingStatus @default(PENDING)
-  specialRequests String?       // Notas de la reserva
+  source          BookingSource @default(WEB)
+  specialRequests String?
+  
+  // Gestión
+  assignedBy      String?
+  modifiedAt      DateTime?
+  confirmedAt     DateTime?
+  seatedAt        DateTime?
+  completedAt     DateTime?
   
   // Relaciones
   customerId      String
   customer        Customer      @relation(fields: [customerId], references: [id])
   
-  tableId         Int?          // Puede ser null si es una reserva online sin mesa asignada aún
+  tableId         Int?
   table           Table?        @relation(fields: [tableId], references: [id])
 
-  // Gestión de Emails Automáticos
-  confirmationToken String?     // Token único para confirmar email
-  reconfirmToken    String?     // Token para reconfirmar asistencia 24h antes
-  
-  emailSentAt       DateTime?   // Cuándo se envió el último email
-  reconfirmedAt     DateTime?   // Cuándo el cliente reconfirmó
+  // Tokens de gestión por email
+  confirmationToken String?     @unique
+  reconfirmToken    String?     @unique
+  emailSentAt       DateTime?
+  reconfirmedAt     DateTime?
   
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  // Índices para que el buscador de disponibilidad sea ULTRA rápido
   @@index([date, status])
+  @@index([customerId])
+  @@index([tableId])
+  @@index([confirmationToken])
 }
 
-// LISTA DE ESPERA
-model Waitlist {
-  id          String   @id @default(uuid())
-  date        DateTime // Día y hora deseada
-  pax         Int
-  notes       String?
-  isResolved  Boolean  @default(false) // Si ya se le llamó o consiguió mesa
+// 📅 CONFIGURACIÓN DE TURNOS
+
+model Shift {
+  id          Int      @id @default(autoincrement())
+  name        String   // "Comidas"
+  startTime   String   // "13:30" (formato HH:mm)
+  endTime     String   // "17:00"
+  isActive    Boolean  @default(true)
+  daysOfWeek  Int[]    // [2,3,4,5,6] donde 0=Domingo, 1=Lunes... 6=Sábado
   
-  customerId  String
-  customer    Customer @relation(fields: [customerId], references: [id])
+  slotInterval Int     @default(30) // Intervalo entre horas disponibles (minutos)
+  maxBookingsPerSlot Int?
+  
+  closures    Closure[]
   
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 🚫 CIERRES Y BLOQUEOS
+
+model Closure {
+  id          String    @id @default(uuid())
+  startDate   DateTime
+  endDate     DateTime?
+  reason      String
+  isFullDay   Boolean   @default(true)
+  
+  shiftId     Int?
+  shift       Shift?    @relation(fields: [shiftId], references: [id], onDelete: SetNull)
+  
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([startDate, endDate])
+}
+
+// ⏳ LISTA DE ESPERA
+
+model Waitlist {
+  id          String   @id @default(uuid())
+  date        DateTime
+  pax         Int
+  notes       String?
+  isResolved  Boolean  @default(false)
+  resolvedAt  DateTime?
+  notifiedAt  DateTime?
+  
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+
+  @@index([date, isResolved])
+  @@index([customerId])
+}
+
+// 🔧 CONFIGURACIÓN DEL SISTEMA
+
+model SystemConfig {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
 }

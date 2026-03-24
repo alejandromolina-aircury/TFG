@@ -2,17 +2,18 @@ services:
   # --- BASE DE DATOS (PostgreSQL v16) ---
   db:
     image: postgres:16
-    container_name: resto_db
+    container_name: resto_db_prod
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root          
-      POSTGRES_DB: mesonMarinero       
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
+      POSTGRES_DB: mesonMarinero
     ports:
-      - "5433:5432"                    
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - resto-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -24,51 +25,44 @@ services:
     build: 
       context: ./backend
       dockerfile: Dockerfile
-    container_name: resto_backend
+    container_name: resto_backend_prod
     ports:
       - "4000:4000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     environment:
-      DATABASE_URL: postgres://postgres:root@db:5432/mesonMarinero
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD:-root}@db:5432/mesonMarinero
       PORT: 4000
-      NODE_ENV: development
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
     networks:
       - resto-network
+    restart: unless-stopped
 
-  # --- FRONTEND (WEB) - Development Mode ---
+  # --- FRONTEND (WEB) - Production Mode ---
   frontend:
     build: 
       context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: resto_frontend
+      dockerfile: Dockerfile
+    container_name: resto_frontend_prod
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "80:80"
     environment:
       - VITE_API_URL=http://localhost:4000/api
-      - BACKEND_URL=http://backend:4000
     depends_on:
       - backend
     networks:
       - resto-network
-    stdin_open: true
-    tty: true
+    restart: unless-stopped
 
-  # --- GESTOR VISUAL DB (pgAdmin) ---
+  # --- GESTOR VISUAL DB (pgAdmin) - Optional en producción ---
   pgadmin:
     image: dpage/pgadmin4
-    container_name: resto_pgadmin
-    restart: always
+    container_name: resto_pgadmin_prod
+    restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-root}
     ports:
       - "5050:80"
     depends_on:
@@ -76,11 +70,13 @@ services:
     networks:
       - resto-network
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - pgadmin_data_prod:/var/lib/pgadmin
+    profiles:
+      - tools  # Solo se inicia si se especifica: docker-compose --profile tools up
 
 volumes:
-  postgres_data:
-  pgadmin_data:
+  postgres_data_prod:
+  pgadmin_data_prod:
 
 networks:
   resto-network:
