@@ -9,14 +9,21 @@ import ReservasPage from './pages/admin/ReservasPage';
 import MesasPage from './pages/admin/MesasPage';
 import ConfiguracionPage from './pages/admin/ConfiguracionPage';
 import ProtectedRoute from './components/admin/ProtectedRoute';
+import Home from './pages/Home';
+import MenuPage from './pages/MenuPage';
+import AboutPage from './pages/AboutPage';
+import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public */}
-        <Route path="/" element={<Navigate to="/reservar" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/reservar" element={<ReservationPage />} />
+        <Route path="/carta" element={<MenuPage />} />
+        <Route path="/historia" element={<AboutPage />} />
 
         {/* Admin auth */}
         <Route path="/admin/login" element={<LoginPage />} />
