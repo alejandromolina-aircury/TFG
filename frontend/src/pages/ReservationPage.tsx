@@ -1,6 +1,5 @@
-// frontend/src/pages/ReservationPage.tsx
-
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
 import './ReservationPage.css';
 import Step1DateTime from '../components/reservation/Step1DateTime';
 import Step2User from '../components/reservation/Step2User';
@@ -32,23 +31,13 @@ export default function ReservationPage() {
 
   return (
     <div className="reservation-page">
-      {/* Header */}
-      <header className="res-header">
-        <div>
-          <div className="res-header__logo">⚓ Mesón Marinero</div>
-          <div className="res-header__sub">Alicante, Mediterráneo</div>
-        </div>
-        <div className="res-header__divider" />
-        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
-          Reservas · Tel. 965 00 00 00
-        </div>
-      </header>
+      <Navbar isReservation={true} />
 
       {/* Main content */}
       <main className="reservation-container">
         <div className="reservation-card">
           {/* Left panel — image */}
-          <div className="reservation-image-panel">
+          <div className="reservation-image-panel" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("/img/Reserva.png")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="image-panel__decor">
               <div className="image-panel__decor-line" />
               <div className="image-panel__decor-line" style={{ width: '24px' }} />
