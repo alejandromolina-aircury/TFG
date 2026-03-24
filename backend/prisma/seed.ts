@@ -1,187 +1,244 @@
 // backend/prisma/seed.ts
 import { PrismaClient, BookingStatus, Language } from '@prisma/client'
+import * as bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 INICIANDO SEEDING DEL SISTEMA COMPLETO...')
+  console.log('🌱 INICIANDO SEED DEL MESÓN MARINERO...')
 
-  // 1. LIMPIEZA PROFUNDA (Orden inverso para evitar errores de claves foráneas)
-  // Borramos primero lo que depende de otros (Hijos), luego los Padres.
+  // 1. LIMPIEZA (orden inverso por claves foráneas)
   await prisma.waitlist.deleteMany()
   await prisma.booking.deleteMany()
+  await prisma.closure.deleteMany()
+  await prisma.shift.deleteMany()
   await prisma.table.deleteMany()
   await prisma.zone.deleteMany()
+  await prisma.customerNote.deleteMany()
   await prisma.customer.deleteMany()
+  await prisma.staff.deleteMany()
 
-  console.log('🧹 Base de datos limpia y lista.')
+  console.log('🧹 Base de datos limpia.')
 
   // ------------------------------------------------------------------
-  // 2. CREACIÓN DE ZONAS
+  // 2. PERSONAL (Admin)
+  // ------------------------------------------------------------------
+  const passwordHash = await bcrypt.hash('admin1234', 10)
+
+  await prisma.staff.create({
+    data: {
+      email: 'admin@mesonmarinero.com',
+      passwordHash,
+      name: 'Administrador',
+      role: 'ADMIN',
+      isActive: true
+    }
+  })
+
+  console.log('✅ Staff admin creado: admin@mesonmarinero.com / admin1234')
+
+  // ------------------------------------------------------------------
+  // 3. TURNO: solo Comidas, Martes-Sábado, 13:30–17:00
+  // daysOfWeek: 0=Domingo, 1=Lunes, 2=Martes, 3=Miércoles,
+  //             4=Jueves, 5=Viernes, 6=Sábado
+  // ------------------------------------------------------------------
+  await prisma.shift.createMany({
+    data: [
+      {
+        name: 'Comidas',
+        startTime: '13:30',
+        endTime: '17:00',
+        isActive: true,
+        slotInterval: 30, // Slots: 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00
+        daysOfWeek: [0, 2, 3, 4, 5, 6] // Todos los días menos Lunes (0=Domingo, 1=Lunes)
+      },
+      {
+        name: 'Cenas',
+        startTime: '20:30',
+        endTime: '23:30',
+        isActive: true,
+        slotInterval: 30,
+        daysOfWeek: [0, 2, 3, 4, 5, 6] // Todos los días menos Lunes
+      }
+    ]
+  })
+
+  console.log('✅ Turnos creados: Comidas y Cenas (Martes a Domingo)')
+
+  // ------------------------------------------------------------------
+  // 4. ZONA: Solo Salón Principal
   // ------------------------------------------------------------------
   const salon = await prisma.zone.create({
-    data: { name: 'Salón Principal', isActive: true }
-  })
-  
-  const terraza = await prisma.zone.create({
-    data: { name: 'Terraza (Vistas)', isActive: true } // Ideal para verano
-  })
-
-  const vip = await prisma.zone.create({
-    data: { name: 'Sala Privada VIP', isActive: true }
+    data: {
+      name: 'Salón Principal',
+      description: 'Salón interior del restaurante',
+      isActive: true,
+      displayOrder: 1
+    }
   })
 
-  console.log('✅ 3 Zonas creadas.')
+  console.log('✅ Zona creada: Salón Principal')
 
   // ------------------------------------------------------------------
-  // 3. CREACIÓN DE MESAS (Infraestructura)
+  // 5. MESAS del Salón Principal
+  // Mix de capacidades para cubrir grupos de 1 a 12 personas
   // ------------------------------------------------------------------
-  
-  // -- Mesas del Salón (Mix de tamaños) --
-  // Creamos 10 mesas: Las pares son de 4 personas, las impares de 2.
-  const mesasSalonData = []
-  for (let i = 1; i <= 10; i++) {
-    mesasSalonData.push({
-      name: `Mesa S-${i}`,
-      minCapacity: 1,
-      maxCapacity: i % 2 === 0 ? 4 : 2, 
-      zoneId: salon.id
-    })
-  }
-  // Una mesa grande para familias en el salón
-  mesasSalonData.push({ name: 'Mesa S-GRANDE', minCapacity: 5, maxCapacity: 10, zoneId: salon.id })
-  
-  // -- Mesas Terraza (Solo parejas y grupos pequeños) --
-  const mesasTerrazaData = []
-  for (let i = 1; i <= 5; i++) {
-    mesasTerrazaData.push({
-      name: `Terraza T-${i}`,
-      minCapacity: 1,
-      maxCapacity: 4,
-      zoneId: terraza.id
-    })
-  }
+  const mesasData = [
+    // Mesas para 2 personas
+    { name: 'Mesa 1', minCapacity: 1, maxCapacity: 2, zoneId: salon.id },
+    { name: 'Mesa 2', minCapacity: 1, maxCapacity: 2, zoneId: salon.id },
+    { name: 'Mesa 3', minCapacity: 1, maxCapacity: 2, zoneId: salon.id },
+    { name: 'Mesa 4', minCapacity: 1, maxCapacity: 2, zoneId: salon.id },
+    // Mesas para 4 personas
+    { name: 'Mesa 5', minCapacity: 2, maxCapacity: 4, zoneId: salon.id },
+    { name: 'Mesa 6', minCapacity: 2, maxCapacity: 4, zoneId: salon.id },
+    { name: 'Mesa 7', minCapacity: 2, maxCapacity: 4, zoneId: salon.id },
+    { name: 'Mesa 8', minCapacity: 2, maxCapacity: 4, zoneId: salon.id },
+    { name: 'Mesa 9', minCapacity: 2, maxCapacity: 4, zoneId: salon.id },
+    // Mesas para 6 personas
+    { name: 'Mesa 10', minCapacity: 4, maxCapacity: 6, zoneId: salon.id },
+    { name: 'Mesa 11', minCapacity: 4, maxCapacity: 6, zoneId: salon.id },
+    { name: 'Mesa 12', minCapacity: 4, maxCapacity: 6, zoneId: salon.id },
+    // Mesas grandes
+    { name: 'Mesa 13', minCapacity: 6, maxCapacity: 8, zoneId: salon.id },
+    { name: 'Mesa 14', minCapacity: 6, maxCapacity: 10, zoneId: salon.id },
+    { name: 'Mesa 15', minCapacity: 8, maxCapacity: 12, zoneId: salon.id },
+  ]
 
-  // -- Mesa VIP (Exclusiva) --
-  const mesaVipData = [{ name: 'Mesa Presidencial', minCapacity: 8, maxCapacity: 12, zoneId: vip.id }]
+  await prisma.table.createMany({ data: mesasData })
 
-  // Insertamos todas
-  await prisma.table.createMany({
-    data: [...mesasSalonData, ...mesasTerrazaData, ...mesaVipData]
-  })
-
-  console.log('✅ Mesas generadas con capacidades lógicas.')
+  console.log(`✅ ${mesasData.length} mesas creadas en el Salón Principal`)
 
   // ------------------------------------------------------------------
-  // 4. CRM DE CLIENTES (Perfiles variados)
+  // 6. CLIENTES CRM DE EJEMPLO
   // ------------------------------------------------------------------
   await prisma.customer.createMany({
     data: [
       {
-        email: 'cliente@normal.com',
+        email: 'juan.perez@example.com',
         phone: '+34600111222',
         firstName: 'Juan',
         lastName: 'Pérez',
         language: Language.ES,
+        totalVisits: 5
+      },
+      {
+        email: 'maria.garcia@example.com',
+        phone: '+34611222333',
+        firstName: 'María',
+        lastName: 'García',
+        isVip: true,
+        preferences: 'Mesa tranquila. Agua sin gas.',
+        language: Language.ES,
+        totalVisits: 23,
+        tags: ['VIP']
+      },
+      {
+        email: 'carlos.nuez@example.com',
+        phone: '+34666000666',
+        firstName: 'Carlos',
+        lastName: 'Nùñez',
+        allergens: ['Frutos Secos', 'Marisco'],
+        language: Language.ES,
         totalVisits: 2
       },
       {
-        email: 'vip@empresa.com',
-        phone: '+34699999999',
-        firstName: 'Victoria',
-        lastName: 'Beckham',
-        isVip: true,
-        preferences: 'Mesa alejada de la entrada. Agua con gas.',
-        language: Language.EN,
-        totalVisits: 50
-      },
-      {
-        email: 'alergico@test.com',
-        phone: '+34666000666',
-        firstName: 'Carlos',
-        lastName: 'Nuez',
-        allergens: ['Frutos Secos', 'Marisco'], // Array de Postgres
-        language: Language.ES,
-        totalVisits: 1
-      },
-      {
-        email: 'blacklisted@bad.com',
+        email: 'bloqueado@example.com',
         phone: '+34000000000',
-        firstName: 'Denis',
-        lastName: 'El Travieso',
-        isBlacklisted: true, // Cliente bloqueado
-        totalVisits: 0
+        firstName: 'Cliente',
+        lastName: 'Bloqueado',
+        isBlacklisted: true,
+        blacklistReason: '3 no-shows consecutivos',
+        totalNoShows: 3,
+        language: Language.ES,
+        totalVisits: 3
       }
     ]
   })
-  
-  console.log('✅ Clientes CRM insertados.')
+
+  console.log('✅ 4 Clientes CRM de ejemplo')
 
   // ------------------------------------------------------------------
-  // 5. SIMULACIÓN DE RESERVAS (Para probar el algoritmo)
+  // 7. RESERVAS DE PRUEBA (usando días válidos: martes a sábado)
   // ------------------------------------------------------------------
-  
-  // Recuperamos los IDs necesarios
-  const clienteNormal = await prisma.customer.findUnique({ where: { email: 'cliente@normal.com' } })
-  const clienteVip = await prisma.customer.findUnique({ where: { email: 'vip@empresa.com' } })
-  
-  // Recuperamos una mesa específica para ocuparla (La primera del salón)
-  const mesaOcupada = await prisma.table.findFirst({ where: { name: 'Mesa S-1' } })
+  const clienteJuan = await prisma.customer.findUnique({ where: { email: 'juan.perez@example.com' } })
+  const clienteVip = await prisma.customer.findUnique({ where: { email: 'maria.garcia@example.com' } })
 
-  if (!clienteNormal || !clienteVip || !mesaOcupada) return
+  const mesa5 = await prisma.table.findFirst({ where: { name: 'Mesa 5' } })
+  const mesa10 = await prisma.table.findFirst({ where: { name: 'Mesa 10' } })
 
-  // FECHAS DINÁMICAS (Para que el seed sirva siempre)
+  if (!clienteJuan || !clienteVip || !mesa5 || !mesa10) return
+
   const hoy = new Date()
-  
-  // -- ESCENARIO 1: Reserva Pasada (Historial) --
-  const fechaPasada = new Date(hoy)
-  fechaPasada.setDate(fechaPasada.getDate() - 7) // Hace una semana
-  
+
+  // Encontrar el próximo martes
+  function nextWeekday(dayOfWeek: number) {
+    const date = new Date(hoy)
+    const daysUntil = (dayOfWeek - date.getDay() + 7) % 7 || 7
+    date.setDate(date.getDate() + daysUntil)
+    date.setHours(14, 0, 0, 0) // 14:00
+    return date
+  }
+
+  const proximoMartes = nextWeekday(2) // Martes
+  const proximoViernes = nextWeekday(5) // Viernes
+
+  // Reserva futura (próximo martes)
   await prisma.booking.create({
     data: {
-      date: fechaPasada,
-      pax: 2,
-      status: BookingStatus.COMPLETED,
-      customerId: clienteNormal.id,
-      tableId: mesaOcupada.id
+      date: proximoMartes,
+      pax: 3,
+      duration: 120,
+      status: BookingStatus.CONFIRMED,
+      customerId: clienteJuan.id,
+      tableId: mesa5.id,
+      specialRequests: 'Cumpleaños de mi esposa',
+      confirmationToken: 'demo-token-juan-001',
+      confirmedAt: new Date()
     }
   })
 
-  // -- ESCENARIO 2: Reserva Futura OCUPANDO MESA (Conflicto) --
-  // Mañana a las 21:00
-  const mananaNoche = new Date(hoy)
-  mananaNoche.setDate(mananaNoche.getDate() + 1)
-  mananaNoche.setHours(21, 0, 0, 0) // 21:00:00
-
+  // Reserva VIP (próximo viernes)
+  const viernes1730 = new Date(proximoViernes)
+  viernes1730.setHours(13, 30, 0, 0)
   await prisma.booking.create({
     data: {
-      date: mananaNoche,
-      pax: 2,
-      status: BookingStatus.CONFIRMED, // Confirmada, por lo tanto OCUPA mesa
+      date: viernes1730,
+      pax: 6,
+      duration: 150,
+      status: BookingStatus.CONFIRMED,
       customerId: clienteVip.id,
-      tableId: mesaOcupada.id, // ¡Mesa S-1 ocupada!
-      specialRequests: "Aniversario"
+      tableId: mesa10.id,
+      confirmationToken: 'demo-token-vip-002',
+      confirmedAt: new Date()
     }
   })
 
-  // -- ESCENARIO 3: Reserva CANCELADA (No debe ocupar mesa) --
-  // Mañana a las 14:00
-  const mananaMediodia = new Date(hoy)
-  mananaMediodia.setDate(mananaMediodia.getDate() + 1)
-  mananaMediodia.setHours(14, 0, 0, 0)
-
+  // Reserva pasada (historial)
+  const semanaPassada = new Date(hoy)
+  semanaPassada.setDate(semanaPassada.getDate() - 7)
+  semanaPassada.setHours(14, 30, 0, 0)
   await prisma.booking.create({
     data: {
-      date: mananaMediodia,
-      pax: 4,
-      status: BookingStatus.CANCELLED, // Cancelada, la mesa S-1 debería salir LIBRE
-      customerId: clienteNormal.id,
-      tableId: mesaOcupada.id
+      date: semanaPassada,
+      pax: 2,
+      duration: 90,
+      status: BookingStatus.COMPLETED,
+      customerId: clienteJuan.id,
+      tableId: mesa5.id,
+      completedAt: new Date()
     }
   })
 
-  console.log('✅ Reservas de prueba creadas (Pasadas, Futuras y Canceladas).')
-  console.log('🚀 SEED COMPLETADO: El sistema está listo para pruebas.')
+  console.log('✅ 3 Reservas de prueba creadas')
+  console.log('')
+  console.log('🚀 SEED COMPLETADO. Resumen:')
+  console.log('   👤 Staff: admin@mesonmarinero.com / admin1234')
+  console.log('   🕐 Turnos: Comidas (13:30-17:00) y Cenas (20:30-23:30), Martes a Domingo')
+  console.log('   🏢 Zona: Salón Principal')
+  console.log('   🪑 15 Mesas (capacidad 1-12 pax)')
+  console.log('   👥 4 Clientes CRM')
+  console.log('   📅 3 Reservas de prueba')
 }
 
 main()
