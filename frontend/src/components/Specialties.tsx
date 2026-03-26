@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useReveal } from '../services/useReveal';
 
 const specialties = [
   {
@@ -23,14 +24,17 @@ const specialties = [
 ];
 
 const Specialties: React.FC = () => {
+  const revealRef = useReveal();
+
   return (
-    <section className="specialties" id="menu">
-      <div className="section-header">
+    <section className="specialties" id="menu" ref={revealRef}>
+      <div className="section-header reveal">
         <h2>Nuestras Especialidades</h2>
       </div>
       <div className="specialties-grid">
-        {specialties.map(item => (
-          <div key={item.id} className="specialty-card">
+        {specialties.map((item, index) => (
+          // Las 3 cards deben revelarse al mismo tiempo.
+          <div key={item.id} className="specialty-card reveal">
             <div className="card-image">
               <img src={item.image} alt={item.name} />
             </div>
@@ -41,7 +45,7 @@ const Specialties: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="section-footer">
+      <div className="section-footer reveal delay-3">
         <Link to="/carta" className="btn btn-primary">Ver Carta Completa</Link>
       </div>
     </section>

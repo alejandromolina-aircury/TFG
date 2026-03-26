@@ -7,8 +7,20 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false }) => {
+  // En la página de reservas el navbar debe ser visible desde el primer render:
+  // forzamos el estado "scrolled" inicial para aplicar el fondo glassmorphism.
+  const [scrolled, setScrolled] = React.useState<boolean>(isReservation);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="sticky-navbar">
+    <header className={`sticky-navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="navbar-left">
           <Link to="/" className="logo-container">
