@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useReveal } from '../services/useReveal';
 
 const testimonials = [
   {
@@ -28,13 +29,14 @@ const Testimonials: React.FC = () => {
   const [startX, setStartX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const revealRef = useReveal();
 
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    setCurrentIndex((prev: number) => (prev + 1) % testimonials.length);
   }, []);
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentIndex((prev: number) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
   useEffect(() => {
@@ -89,8 +91,8 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <section className="testimonials">
-      <div className="section-header">
+    <section className="testimonials" ref={revealRef}>
+      <div className="section-header reveal">
         <h2>Lo que dicen nuestros clientes</h2>
       </div>
       
