@@ -188,3 +188,83 @@ export async function updateSystemConfig(payload: any) {
   const { data } = await api.patch('/backoffice/config', payload);
   return data.data;
 }
+
+// ─── Customers API ────────────────────────────────────────
+
+/**
+ * Get list of customers with optional search and filters
+ * GET /api/backoffice/customers
+ */
+export async function getCustomers(params?: {
+  search?: string;
+  isVip?: boolean;
+  isBlacklisted?: boolean;
+  limit?: number;
+  page?: number;
+}): Promise<{ customers: any[]; total: number }> {
+  const { data } = await api.get('/backoffice/customers', { params });
+  return {
+    customers: data.data?.customers || [],
+    total: data.data?.total || 0,
+  };
+}
+
+/**
+ * Get customer details by ID
+ * GET /api/backoffice/customers/:id
+ */
+export async function getCustomerById(id: string): Promise<any> {
+  const { data } = await api.get(`/backoffice/customers/${id}`);
+  return data.data;
+}
+
+/**
+ * Update customer profile
+ * PATCH /api/backoffice/customers/:id
+ */
+export async function updateCustomer(
+  id: string,
+  payload: {
+    preferences?: string;
+    tags?: string[];
+    allergens?: string[];
+    birthday?: string;
+  }
+): Promise<any> {
+  const { data } = await api.patch(`/backoffice/customers/${id}`, payload);
+  return data.data;
+}
+
+/**
+ * Add a note to a customer
+ * POST /api/backoffice/customers/:id/notes
+ */
+export async function addCustomerNote(id: string, note: string): Promise<any> {
+  const { data } = await api.post(`/backoffice/customers/${id}/notes`, { note });
+  return data.data;
+}
+
+/**
+ * Toggle customer VIP status
+ * POST /api/backoffice/customers/:id/vip
+ */
+export async function toggleCustomerVip(id: string, isVip: boolean): Promise<any> {
+  const { data } = await api.post(`/backoffice/customers/${id}/vip`, { isVip });
+  return data.data;
+}
+
+/**
+ * Toggle customer blacklist status
+ * POST /api/backoffice/customers/:id/blacklist
+ */
+export async function toggleCustomerBlacklist(
+  id: string,
+  blacklist: boolean,
+  reason?: string
+): Promise<any> {
+  const { data } = await api.post(`/backoffice/customers/${id}/blacklist`, {
+    blacklist,
+    reason,
+  });
+  return data.data;
+}
