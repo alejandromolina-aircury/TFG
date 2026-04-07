@@ -65,17 +65,18 @@ export default function Step3Success({ confirmation, onRestart }: Props) {
         )}
       </div>
 
-      <div className="confirmation-code">
-        <div className="confirmation-code__label">Código de reserva</div>
-        <div className="confirmation-code__value">{booking.confirmationCode}</div>
+      <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.2)', borderRadius: '8px', textAlign: 'center' }}>
+        <p style={{ fontSize: '0.85rem', color: '#854d0e', margin: 0, fontWeight: 500 }}>
+          Si necesitas modificar o cancelar tu reserva, por favor llámanos al local: <strong>+34 912 345 678</strong>
+        </p>
       </div>
 
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '320px' }}>
-        Guarda este código por si necesitas modificar o cancelar tu reserva. También te hemos enviado un email a <strong>{customer.email}</strong>.
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '320px', marginTop: '1rem' }}>
+        Te hemos enviado los detalles de tu reserva al email <strong>{customer.email}</strong>.
       </p>
 
       <button type="button" className="btn btn-outline w-full" onClick={onRestart}>
-        Hacer otra reserva
+        Volver al inicio
       </button>
     </div>
   );

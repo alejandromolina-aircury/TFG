@@ -9,6 +9,7 @@ import ReservasPage from './pages/admin/ReservasPage';
 import MesasPage from './pages/admin/MesasPage';
 import CustomersPage from './pages/admin/CustomersPage';
 import ConfiguracionPage from './pages/admin/ConfiguracionPage';
+import CartaPage from './pages/admin/CartaPage';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import Home from './pages/Home';
 import MenuPage from './pages/MenuPage';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="mesas" element={<MesasPage />} />
           <Route path="clientes" element={<CustomersPage />} />
           <Route path="configuracion" element={<ConfiguracionPage />} />
+          <Route path="carta" element={<CartaPage />} />
         </Route>
 
         {/* Fallback */}
