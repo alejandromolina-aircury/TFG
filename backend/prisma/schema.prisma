@@ -246,3 +246,37 @@ model SystemConfig {
   description String?
   updatedAt   DateTime @updatedAt
 }
+
+// 🍽️ GESTIÓN DE CARTA / MENÚ
+
+model MenuCategory {
+  id          Int        @id @default(autoincrement())
+  name        String     // "Entrantes Fríos", "Segundos Compartir"
+  description String?
+  isActive    Boolean    @default(true)
+  displayOrder Int       @default(0)
+  items       MenuItem[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([isActive])
+}
+
+model MenuItem {
+  id          Int          @id @default(autoincrement())
+  name        String       // "Croquetas caseras"
+  description String?      // "Pollo y jamón"
+  price       String       // "3€", "S. Mercado"
+  isActive    Boolean      @default(true)
+  displayOrder Int         @default(0)
+  
+  categoryId  Int
+  category    MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([categoryId])
+  @@index([isActive])
+}
