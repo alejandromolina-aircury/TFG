@@ -9,6 +9,7 @@ const navLinks = [
   { to: '/admin/reservas', label: 'Reservas', icon: '📅', end: false },
   { to: '/admin/mesas', label: 'Mesas', icon: '🍽️', end: false },
   { to: '/admin/clientes', label: 'Clientes', icon: '👥', end: false },
+  { to: '/admin/carta', label: 'Carta / Menú', icon: '📜', end: false },
   { to: '/admin/configuracion', label: 'Configuración', icon: '⚙️', end: false },
 ];
 
