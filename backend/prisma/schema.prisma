@@ -1,5 +1,3 @@
-// backend/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +7,194 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// --- ENUMS ---
+model Staff {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         StaffRole @default(STAFF)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Customer {
+  id              String         @id @default(uuid())
+  email           String         @unique
+  phone           String
+  firstName       String
+  lastName        String
+  language        Language       @default(ES)
+  allergens       String[]
+  preferences     String?
+  birthday        DateTime?
+  totalVisits     Int            @default(0)
+  isVip           Boolean        @default(false)
+  isBlacklisted   Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  blacklistReason String?
+  tags            String[]
+  totalNoShows    Int            @default(0)
+  bookings        Booking[]
+  notes           CustomerNote[]
+  waitlist        Waitlist[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model CustomerNote {
+  id         String   @id @default(uuid())
+  note       String
+  createdBy  String
+  customerId String
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+}
+
+model Zone {
+  id           Int      @id @default(autoincrement())
+  name         String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  description  String?
+  displayOrder Int      @default(0)
+  updatedAt    DateTime @updatedAt
+  tables       Table[]
+}
+
+model Table {
+  id          Int       @id @default(autoincrement())
+  name        String
+  minCapacity Int
+  maxCapacity Int
+  zoneId      Int
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+  zone        Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@index([zoneId])
+  @@index([isActive])
+}
+
+model Booking {
+  id                String        @id @default(uuid())
+  date              DateTime
+  duration          Int           @default(120)
+  pax               Int
+  status            BookingStatus @default(PENDING)
+  specialRequests   String?
+  customerId        String
+  tableId           Int?
+  confirmationToken String?       @unique
+  reconfirmToken    String?       @unique
+  emailSentAt       DateTime?
+  reconfirmedAt     DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  assignedBy        String?
+  completedAt       DateTime?
+  confirmedAt       DateTime?
+  modifiedAt        DateTime?
+  seatedAt          DateTime?
+  source            BookingSource @default(WEB)
+  customer          Customer      @relation(fields: [customerId], references: [id])
+  table             Table?        @relation(fields: [tableId], references: [id])
+
+  @@index([date, status])
+  @@index([customerId])
+  @@index([tableId])
+  @@index([confirmationToken])
+}
+
+model Shift {
+  id                 Int       @id @default(autoincrement())
+  name               String
+  startTime          String
+  endTime            String
+  isActive           Boolean   @default(true)
+  daysOfWeek         Int[]
+  slotInterval       Int       @default(30)
+  maxBookingsPerSlot Int?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  closures           Closure[]
+}
+
+model Closure {
+  id        String    @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime?
+  reason    String
+  isFullDay Boolean   @default(true)
+  shiftId   Int?
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  shift     Shift?    @relation(fields: [shiftId], references: [id])
+
+  @@index([startDate, endDate])
+}
+
+model Waitlist {
+  id         String    @id @default(uuid())
+  date       DateTime
+  pax        Int
+  notes      String?
+  isResolved Boolean   @default(false)
+  customerId String
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+  resolvedAt DateTime?
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([date, isResolved])
+  @@index([customerId])
+}
+
+model SystemConfig {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model MenuCategory {
+  id           Int        @id @default(autoincrement())
+  name         String
+  description  String?
+  isActive     Boolean    @default(true)
+  displayOrder Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  items        MenuItem[]
+
+  @@index([isActive])
+}
+
+model MenuItem {
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String?
+  price        String
+  isActive     Boolean      @default(true)
+  displayOrder Int          @default(0)
+  categoryId   Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  category     MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([isActive])
+}
 
 enum StaffRole {
   ADMIN
@@ -33,250 +218,8 @@ enum BookingStatus {
 }
 
 enum BookingSource {
-  WEB          // Reserva online del cliente
-  PHONE        // Llamada telefónica
-  WALK_IN      // Pasante (sin reserva previa)
-  BACKOFFICE   // Creada desde panel de gestión
-}
-
-// --- MODELOS ---
-
-// 🔐 PERSONAL DEL RESTAURANTE (Login)
-model Staff {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String
-  name         String
-  role         StaffRole @default(STAFF)
-  isActive     Boolean   @default(true)
-
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@index([email])
-}
-
-// 👤 CRM DE CLIENTES
-model Customer {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  phone         String
-  firstName     String
-  lastName      String
-  language      Language  @default(ES)
-  
-  // Datos CRM
-  allergens     String[]  // Array nativo de Postgres: ["Gluten", "Lactosa"]
-  tags          String[]  // ["VIP", "Cumpleaños"]
-  preferences   String?   // Notas generales
-
-  birthday      DateTime?
-  
-  // Métricas
-  totalVisits   Int       @default(0)
-  totalNoShows  Int       @default(0)
-  isVip         Boolean   @default(false)
-  isBlacklisted Boolean   @default(false)
-  blacklistReason String?
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relaciones
-  bookings      Booking[]
-  waitlist      Waitlist[]
-  notes         CustomerNote[]
-
-  @@index([email])
-  @@index([phone])
-}
-
-// 📝 Notas del Staff sobre Clientes
-model CustomerNote {
-  id          String   @id @default(uuid())
-  note        String
-  createdBy   String   // Nombre del staff
-  
-  customerId  String
-  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-
-  @@index([customerId])
-}
-
-// 🏢 GESTIÓN DE ESPACIO
-
-model Zone {
-  id          Int       @id @default(autoincrement())
-  name        String    // "Salón Principal"
-  description String?
-  isActive    Boolean   @default(true)
-  displayOrder Int      @default(0)
-  
-  tables      Table[]
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Table {
-  id              Int      @id @default(autoincrement())
-  name            String   // "Mesa 1", "Mesa A-2"
-  minCapacity     Int
-  maxCapacity     Int
-  isActive        Boolean  @default(true)
-  
-  zoneId          Int
-  zone            Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  
-  bookings        Booking[]
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([zoneId])
-  @@index([isActive])
-}
-
-// 🎫 MOTOR DE RESERVAS
-
-model Booking {
-  id              String        @id @default(uuid())
-  date            DateTime      // Fecha y hora de inicio
-  duration        Int           @default(120) // Minutos
-  pax             Int
-  status          BookingStatus @default(PENDING)
-  source          BookingSource @default(WEB)
-  specialRequests String?
-  
-  // Gestión
-  assignedBy      String?
-  modifiedAt      DateTime?
-  confirmedAt     DateTime?
-  seatedAt        DateTime?
-  completedAt     DateTime?
-  
-  // Relaciones
-  customerId      String
-  customer        Customer      @relation(fields: [customerId], references: [id])
-  
-  tableId         Int?
-  table           Table?        @relation(fields: [tableId], references: [id])
-
-  // Tokens de gestión por email
-  confirmationToken String?     @unique
-  reconfirmToken    String?     @unique
-  emailSentAt       DateTime?
-  reconfirmedAt     DateTime?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  @@index([date, status])
-  @@index([customerId])
-  @@index([tableId])
-  @@index([confirmationToken])
-}
-
-// 📅 CONFIGURACIÓN DE TURNOS
-
-model Shift {
-  id          Int      @id @default(autoincrement())
-  name        String   // "Comidas"
-  startTime   String   // "13:30" (formato HH:mm)
-  endTime     String   // "17:00"
-  isActive    Boolean  @default(true)
-  daysOfWeek  Int[]    // [2,3,4,5,6] donde 0=Domingo, 1=Lunes... 6=Sábado
-  
-  slotInterval Int     @default(30) // Intervalo entre horas disponibles (minutos)
-  maxBookingsPerSlot Int?
-  
-  closures    Closure[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// 🚫 CIERRES Y BLOQUEOS
-
-model Closure {
-  id          String    @id @default(uuid())
-  startDate   DateTime
-  endDate     DateTime?
-  reason      String
-  isFullDay   Boolean   @default(true)
-  
-  shiftId     Int?
-  shift       Shift?    @relation(fields: [shiftId], references: [id], onDelete: SetNull)
-  
-  createdBy   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([startDate, endDate])
-}
-
-// ⏳ LISTA DE ESPERA
-
-model Waitlist {
-  id          String   @id @default(uuid())
-  date        DateTime
-  pax         Int
-  notes       String?
-  isResolved  Boolean  @default(false)
-  resolvedAt  DateTime?
-  notifiedAt  DateTime?
-  
-  customerId  String
-  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-
-  @@index([date, isResolved])
-  @@index([customerId])
-}
-
-// 🔧 CONFIGURACIÓN DEL SISTEMA
-
-model SystemConfig {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique
-  value       String
-  description String?
-  updatedAt   DateTime @updatedAt
-}
-
-// 🍽️ GESTIÓN DE CARTA / MENÚ
-
-model MenuCategory {
-  id          Int        @id @default(autoincrement())
-  name        String     // "Entrantes Fríos", "Segundos Compartir"
-  description String?
-  isActive    Boolean    @default(true)
-  displayOrder Int       @default(0)
-  items       MenuItem[]
-
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([isActive])
-}
-
-model MenuItem {
-  id          Int          @id @default(autoincrement())
-  name        String       // "Croquetas caseras"
-  description String?      // "Pollo y jamón"
-  price       String       // "3€", "S. Mercado"
-  isActive    Boolean      @default(true)
-  displayOrder Int         @default(0)
-  
-  categoryId  Int
-  category    MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  @@index([categoryId])
-  @@index([isActive])
+  WEB
+  PHONE
+  WALK_IN
+  BACKOFFICE
 }
