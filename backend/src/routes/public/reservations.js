@@ -27,16 +27,8 @@ router.post('/availability/check', availabilityController.checkAvailability);
 // Crear nueva reserva
 router.post('/', reservationController.createReservation);
 
-// GET /api/public/reservations/:confirmationCode
-// Ver detalles de reserva por código
-router.get('/:confirmationCode', reservationController.getReservationByCode);
-
-// PATCH /api/public/reservations/:confirmationCode/cancel
-// Cancelar reserva
-router.patch('/:confirmationCode/cancel', reservationController.cancelReservation);
-
-// PATCH /api/public/reservations/:confirmationCode/reconfirm
-// Reconfirmar asistencia 24h antes
-router.patch('/:confirmationCode/reconfirm', reservationController.reconfirmReservation);
+// router.get('/:confirmationCode', reservationController.getReservationByCode);
+// router.patch('/:confirmationCode/cancel', reservationController.cancelReservation);
+// router.patch('/:confirmationCode/reconfirm', reservationController.reconfirmReservation);
 
 module.exports = router;

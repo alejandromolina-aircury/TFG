@@ -124,7 +124,7 @@ export interface ReservationPayload {
 export interface ReservationConfirmation {
   booking: {
     id: string;
-    confirmationCode: string;
+    confirmationCode?: string;
     date: string;
     pax: number;
     duration: string;
@@ -140,4 +140,22 @@ export interface ReservationConfirmation {
     zone?: string;
     note?: string;
   };
+}
+
+export interface MenuItem {
+  id: number;
+  name: string;
+  description?: string;
+  price: string;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface MenuCategory {
+  id: number;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  displayOrder: number;
+  items: MenuItem[];
 }

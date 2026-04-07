@@ -111,7 +111,6 @@ exports.createReservation = asyncHandler(async (req, res) => {
     data: {
       booking: {
         id: booking.id,
-        confirmationCode: confirmationToken,
         date: booking.date,
         pax: booking.pax,
         duration: `${booking.duration} minutos`,

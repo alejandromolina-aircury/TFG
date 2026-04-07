@@ -268,3 +268,58 @@ export async function toggleCustomerBlacklist(
   });
   return data.data;
 }
+
+// ─── Menu API ──────────────────────────────────────────
+
+/**
+ * Get public menu
+ * GET /api/public/menu
+ */
+export async function getPublicMenu() {
+  const { data } = await api.get('/public/menu');
+  return data.data.categories;
+}
+
+/**
+ * Get backoffice menu categories with items
+ * GET /api/backoffice/menu/categories
+ */
+export async function getAdminMenu() {
+  const { data } = await api.get('/backoffice/menu/categories');
+  return data.data.categories;
+}
+
+export async function createMenuCategory(payload: any) {
+  const { data } = await api.post('/backoffice/menu/categories', payload);
+  return data.data;
+}
+
+export async function updateMenuCategory(id: number, payload: any) {
+  const { data } = await api.put(`/backoffice/menu/categories/${id}`, payload);
+  return data.data;
+}
+
+export async function deleteMenuCategory(id: number) {
+  const { data } = await api.delete(`/backoffice/menu/categories/${id}`);
+  return data.data;
+}
+
+export async function createMenuItem(payload: any) {
+  const { data } = await api.post('/backoffice/menu/items', payload);
+  return data.data;
+}
+
+export async function updateMenuItem(id: number, payload: any) {
+  const { data } = await api.put(`/backoffice/menu/items/${id}`, payload);
+  return data.data;
+}
+
+export async function deleteMenuItem(id: number) {
+  const { data } = await api.delete(`/backoffice/menu/items/${id}`);
+  return data.data;
+}
+
+export async function reorderMenuCategories(ids: (number | string)[]) {
+  const { data } = await api.post('/backoffice/menu/categories/reorder', { ids });
+  return data.data;
+}
