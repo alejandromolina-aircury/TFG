@@ -15,6 +15,7 @@ const authRoutes = require('./routes/auth');
 
 // Rutas públicas (Frontend cliente)
 const publicReservationRoutes = require('./routes/public/reservations');
+const publicMenuRoutes = require('./routes/public/menu');
 
 // Rutas back-office (Panel de gestión)
 const backofficeBookingRoutes = require('./routes/backoffice/bookings');
@@ -24,6 +25,7 @@ const backofficeShiftRoutes = require('./routes/backoffice/shifts');
 const backofficeClosureRoutes = require('./routes/backoffice/closures');
 const backofficeDashboardRoutes = require('./routes/backoffice/dashboard');
 const backofficeConfigRoutes = require('./routes/backoffice/config');
+const backofficeMenuRoutes = require('./routes/backoffice/menu');
 
 // --- CONFIGURACIÓN INICIAL ---
 const app = express();
@@ -89,6 +91,7 @@ app.use('/api/auth', authRoutes);
 
 // 4. APIs PÚBLICAS (Frontend Cliente)
 app.use('/api/public/reservations', publicReservationRoutes);
+app.use('/api/public/menu', publicMenuRoutes);
 
 // 5. APIs BACK-OFFICE (Panel de Gestión) — protegidas con JWT
 app.use('/api/backoffice', authMiddleware);
@@ -99,6 +102,7 @@ app.use('/api/backoffice/shifts', backofficeShiftRoutes);
 app.use('/api/backoffice/closures', backofficeClosureRoutes);
 app.use('/api/backoffice/dashboard', backofficeDashboardRoutes);
 app.use('/api/backoffice/config', backofficeConfigRoutes);
+app.use('/api/backoffice/menu', backofficeMenuRoutes);
 
 // 5. Ruta de Debug - Ver zonas y mesas (Solo desarrollo)
 if (NODE_ENV === 'development') {
