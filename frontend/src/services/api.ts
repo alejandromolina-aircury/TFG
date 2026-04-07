@@ -113,6 +113,15 @@ export async function getBookings(params?: {
 }
 
 /**
+ * Create a new backoffice reservation
+ * POST /api/backoffice/bookings
+ */
+export async function createBackofficeBooking(payload: any): Promise<Booking> {
+  const { data } = await api.post('/backoffice/bookings', payload);
+  return data.data as Booking;
+}
+
+/**
  * Update a booking's status
  * PATCH /api/backoffice/bookings/:id/status
  */
@@ -125,7 +134,57 @@ export async function updateBookingStatus(id: string, status: BookingStatus): Pr
  * Get all zones with their tables
  * GET /api/backoffice/zones
  */
-export async function getZones() {
-  const { data } = await api.get('/backoffice/zones');
+export async function getZones(all: boolean = false) {
+  const { data } = await api.get('/backoffice/zones', { params: { all } });
+  return data.data?.zones || data.data; // Handles the old and new response shape
+}
+
+export async function createZone(payload: any) {
+  const { data } = await api.post('/backoffice/zones', payload);
+  return data.data;
+}
+
+export async function updateZone(id: number, payload: any) {
+  const { data } = await api.put(`/backoffice/zones/${id}`, payload);
+  return data.data;
+}
+
+export async function deleteZone(id: number) {
+  const { data } = await api.delete(`/backoffice/zones/${id}`);
+  return data.data;
+}
+
+export async function createTable(zoneId: number, payload: any) {
+  const { data } = await api.post(`/backoffice/zones/${zoneId}/tables`, payload);
+  return data.data;
+}
+
+export async function updateTable(tableId: number, payload: any) {
+  const { data } = await api.put(`/backoffice/zones/tables/${tableId}`, payload);
+  return data.data;
+}
+
+export async function deleteTable(tableId: number) {
+  const { data } = await api.delete(`/backoffice/zones/tables/${tableId}`);
+  return data.data;
+}
+
+export async function getShifts() {
+  const { data } = await api.get('/backoffice/shifts');
+  return data.data?.shifts || [];
+}
+
+export async function updateShift(id: number, payload: any) {
+  const { data } = await api.patch(`/backoffice/shifts/${id}`, payload);
+  return data.data;
+}
+
+export async function getSystemConfig() {
+  const { data } = await api.get('/backoffice/config');
+  return data.data;
+}
+
+export async function updateSystemConfig(payload: any) {
+  const { data } = await api.patch('/backoffice/config', payload);
   return data.data;
 }
