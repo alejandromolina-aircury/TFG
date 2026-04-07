@@ -7,6 +7,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
 import ReservasPage from './pages/admin/ReservasPage';
 import MesasPage from './pages/admin/MesasPage';
+import CustomersPage from './pages/admin/CustomersPage';
 import ConfiguracionPage from './pages/admin/ConfiguracionPage';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import Home from './pages/Home';
@@ -40,6 +41,7 @@ export default function App() {
           <Route index element={<DashboardPage />} />
           <Route path="reservas" element={<ReservasPage />} />
           <Route path="mesas" element={<MesasPage />} />
+          <Route path="clientes" element={<CustomersPage />} />
           <Route path="configuracion" element={<ConfiguracionPage />} />
         </Route>
 

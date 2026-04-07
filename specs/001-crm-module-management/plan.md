@@ -1,13 +1,13 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Customer Management Module
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Branch**: `001-crm-module-management` | **Date**: April 7, 2026 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `/specs/001-crm-module-management/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement a CRM module in the admin panel for managing restaurant customers. Primary requirement: Add a new "Customers" section with a searchable list view displaying customer details and status badges, plus a details modal for viewing booking history, editing preferences/tags/allergens, toggling VIP/blacklist status, and adding internal notes. Technical approach: Leverage existing Prisma Customer/CustomerNote models and backend controllers/services; add new frontend CustomersPage.tsx with API integration, following existing admin UI patterns.
 
 ## Technical Context
 
@@ -17,15 +17,17 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+## Technical Context
+
+**Language/Version**: Node.js + Express (ES6+), React + TypeScript  
+**Primary Dependencies**: Prisma Client, Joi, Winston, Axios  
+**Storage**: PostgreSQL  
+**Testing**: NEEDS CLARIFICATION (constitution prohibits tests)  
+**Target Platform**: Web application (Linux server)  
+**Project Type**: Web application (frontend + backend)  
+**Performance Goals**: Search results <0.5s, customer details <3 clicks  
+**Constraints**: No raw SQL, no `any` in TypeScript, Dockerized environment  
+**Scale/Scope**: Up to 10,000 customers, real-time search and modal interactions
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -52,7 +54,7 @@ and an explicit approval from project maintainers.
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
+specs/001-crm-module-management/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)
@@ -62,51 +64,26 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+│   ├── controllers/backoffice/customerController.js
+│   ├── services/customerService.js
+│   ├── routes/customers.js
+│   └── index.js
+└── prisma/schema.prisma
 
 frontend/
 ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+│   ├── pages/admin/CustomersPage.tsx
+│   ├── services/api.ts
+│   ├── types/index.ts
+│   └── App.tsx
+└── package.json
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web application structure with separate backend and frontend directories. Backend uses existing patterns for controllers/services/routes. Frontend adds new admin page and extends API services.
 
 ## Complexity Tracking
 
