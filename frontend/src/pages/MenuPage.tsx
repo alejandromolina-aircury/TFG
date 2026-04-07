@@ -1,89 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { getPublicMenu } from '../services/api';
+import type { MenuCategory } from '../types';
 
 const MenuPage: React.FC = () => {
-  const sections = [
-    {
-      title: 'ENTRANTES FRÍOS',
-      items: [
-        { name: 'Carpaccio de ventresca de atún rojo', price: '20€' },
-        { name: 'Hueva de mújol en semi salazón con almendra marcona', price: '11€' },
-        { name: 'Anchoa de Lolin', price: '3€' },
-        { name: 'Nuestra marinera', price: '4.5 / 6€' },
-        { name: 'Ensaladilla de pulpo', price: '10 / 17€' },
-        { name: 'Sardina ahumada', price: '5€' },
-        { name: 'Ensalada de ventresca de bonito', price: '20€' },
-        { name: 'Ensalada de sardina ahumada', price: '19.5€' },
-        { name: 'Cecina de Astorga', price: '10 / 17€' },
-        { name: 'Embutidos de Guadalest Casa Gloria', price: '8 / 12€' },
-        { name: 'Tabla de quesos', price: '10 / 16€' }
-      ]
-    },
-    {
-      title: 'ENTRANTES CALIENTES',
-      items: [
-        { name: 'Croquetas caseras', price: '3€' },
-        { name: 'Sepionet plancha', price: '12 / 20€' },
-        { name: 'Puntilla encebollada / Chipirón plancha', price: '21 / 11€ unidad' },
-        { name: 'Chipirón encebollado', price: '11€ unidad' },
-        { name: 'Almejas a la marinera', price: '21€' },
-        { name: 'Mejillones al vapor', price: '12€' },
-        { name: 'Mejillones picantones', price: '12€' },
-        { name: 'Pulpo dos cocciones', price: '22€' }
-      ]
-    },
-    {
-      title: 'LOS MÁS ESPECIALES',
-      items: [
-        { name: 'Quisquilla 100gr.', price: '17€' },
-        { name: 'Gamba roja 1ª', price: 'S. Mercado' },
-        { name: 'Salpicón de langosta', price: 'S. Mercado' }
-      ]
-    },
-    {
-      title: 'PARA DAR LA LATA',
-      items: [
-        { name: 'Caviar Tanit King Gold Lata 10 gr.', price: '30€' },
-        { name: 'Navajas al natural Real Conservera Española', price: '22€' },
-        { name: 'Mejillones en escabeche con papas', price: '16€' },
-        { name: 'Sardinillas en aceite Real Conservera Española', price: '22€' }
-      ]
-    },
-    {
-      title: 'INDIVIDUALES',
-      items: [
-        { name: 'Merluza rebozada', price: '24€' },
-        { name: 'Ventresca de atún rojo', price: '30€' },
-        { name: 'Solomillo de ternera', price: '25€' }
-      ]
-    },
-    {
-      title: 'SEGUNDOS COMPARTIR (Precio por persona)',
-      items: [
-        { name: 'Rodaballo a la castreña', price: '30€' },
-        { name: 'Cogote de merluza', price: '24€' },
-        { name: 'Lubina a la espalda', price: '29€' },
-        { name: 'Cherna al horno', price: '29€' },
-        { name: 'Dentón a la espalda', price: '30€' },
-        { name: 'Urta a la espalda', price: '29€' },
-        { name: 'Besugo a la espalda', price: '35€' },
-        { name: 'Cabracho al horno', price: '30€' },
-        { name: 'Corvina a la espalda', price: '25€' },
-        { name: 'Chuleta de vaca (Precio pieza)', price: '42€/kilo' }
-      ]
-    },
-    {
-      title: 'Acompañamientos y Extras',
-      items: [
-        { name: 'Pan de pueblo', price: '1€ P.P.' },
-        { name: 'Salsas extra', price: '1€' },
-        { name: 'Aceitunas', price: '1€' },
-        { name: 'Almendras fritas', price: '2.5€' },
-        { name: 'Aceite Verdeliss', price: '1.5€ P.P.' }
-      ]
-    }
-  ];
+  const [sections, setSections] = useState<MenuCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getPublicMenu()
+      .then(data => setSections(data))
+      .catch(err => console.error("Error loading menu", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="menu-page">
@@ -112,24 +42,72 @@ const MenuPage: React.FC = () => {
         </div>
       </header>
       <main className="container" style={{ padding: '4rem 1.5rem', maxWidth: '800px', margin: '0 auto' }}>
-        {sections.map((section, idx) => (
-          <div key={idx} className="menu-section" style={{ marginBottom: '3rem' }}>
-            <h2 style={{ color: 'var(--primary)', borderBottom: '2px solid var(--accent-decor)', paddingBottom: '0.5rem', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
-              {section.title}
-            </h2>
-            <div className="menu-items">
-              {section.items.map((item, iIdx) => (
-                <div key={iIdx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px dashed var(--border)', paddingBottom: '0.25rem' }}>
-                  <span style={{ fontWeight: 600 }}>{item.name}</span>
-                  <span style={{ color: 'var(--accent-action)', fontWeight: 700 }}>{item.price}</span>
-                </div>
-              ))}
-            </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+            <div className="spinner" style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+            <p style={{ color: 'var(--text-muted)' }}>Cargando nuestra carta...</p>
           </div>
-        ))}
+        ) : sections.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '5rem 0', backgroundColor: 'var(--bg-light)', borderRadius: 'var(--radius)', border: '1px dashed var(--border)' }}>
+            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>La carta no está disponible en este momento.</p>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Por favor, vuelve a consultarla más tarde o pregunta a nuestro personal.</p>
+          </div>
+        ) : (
+          sections.map((section, idx) => (
+            <div key={idx} className="menu-section" style={{ marginBottom: '4rem' }}>
+              <h2 style={{ 
+                color: 'var(--primary)', 
+                borderBottom: '2px solid var(--accent-decor)', 
+                paddingBottom: '0.75rem', 
+                marginBottom: '2rem', 
+                fontSize: '1.75rem',
+                fontFamily: "'Playfair Display', serif"
+              }}>
+                {section.name}
+              </h2>
+              {section.description && (
+                <p style={{ 
+                  fontSize: '1rem', 
+                  color: 'var(--text-muted)', 
+                  marginBottom: '2rem', 
+                  fontStyle: 'italic',
+                  lineHeight: '1.6'
+                }}>
+                  {section.description}
+                </p>
+              )}
+              <div className="menu-items">
+                {section.items.map((item, iIdx) => (
+                  <div key={iIdx} style={{ 
+                    marginBottom: '1.75rem', 
+                    borderBottom: '1px dashed var(--border)', 
+                    paddingBottom: '0.75rem' 
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '1rem' }}>
+                      <span style={{ fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-dark)' }}>{item.name}</span>
+                      <div style={{ flex: 1, borderBottom: '1px dotted var(--border)', margin: '0 0.5rem', marginBottom: '0.3rem', opacity: 0.3 }}></div>
+                      <span style={{ color: 'var(--accent-action)', fontWeight: 800, fontSize: '1.1rem', whiteSpace: 'nowrap' }}>{item.price}</span>
+                    </div>
+                    {item.description && (
+                      <p style={{ 
+                        fontSize: '0.92rem', 
+                        color: 'var(--text-muted)', 
+                        marginTop: '0.4rem', 
+                        marginBottom: 0,
+                        lineHeight: '1.5'
+                      }}>
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
 
         <footer style={{ marginTop: '5rem', textAlign: 'center', backgroundColor: 'var(--bg-light)', padding: '3rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
-          <h3 style={{ marginBottom: '1.5rem', color: 'var(--primary)' }}>Agradecimientos</h3>
+          <h3 style={{ marginBottom: '1.5rem', color: 'var(--primary)', fontFamily: "'Playfair Display', serif" }}>Agradecimientos</h3>
           <p style={{ fontStyle: 'italic', color: 'var(--text-dark)', lineHeight: '1.8' }}>
             "A nuestros padres, Eduardo y Alicia, que desde 1988 forjaron este sueño, que hasta hoy sus hijos intentamos mantener vivo día a día. Siéntate a la mesa, siéntete en tu casa, descorchemos un buen vino, y disfruta de nuestro precioso legado."
           </p>
