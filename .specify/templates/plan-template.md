@@ -28,10 +28,24 @@
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
-
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+The implementation plan MUST verify the following gates derived from the project
+constitution before research or implementation proceeds:
+
+- Backend validation: Joi is used for all API inputs where applicable.
+- Database: Schema changes are implemented only via `backend/prisma/schema.prisma`
+  and `npx prisma migrate dev`; no manual DB edits.
+- Logging: Winston is configured for backend services.
+- Frontend: TypeScript is used with NO `any` types; API calls centralized in
+  `src/services/`.
+- Infrastructure: Project is Dockerized and `docker-compose` files are present.
+- Security: Staff auth uses JWT; password hashing via `bcryptjs`.
+- Prohibitions: NO raw SQL and NO tests (project policy).
+
+Plans or design docs that violate these gates MUST include a written justification
+and an explicit approval from project maintainers.
 
 ## Project Structure
 

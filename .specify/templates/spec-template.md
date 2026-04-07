@@ -20,6 +20,19 @@
   - Demonstrated to users independently
 -->
 
+## Constitution Compliance (MANDATORY)
+
+All specifications created from this template MUST declare how the feature complies
+with the project constitution. At minimum the spec MUST state:
+
+- How input validation will use Joi in the backend (or why it cannot).
+- Any schema changes to `backend/prisma/schema.prisma` and the required migration
+  steps.
+- Logging and observability requirements (Winston usage) for backend flows.
+- Frontend TypeScript conformance (NO `any`) and where API clients will live.
+- Any operational steps required by Docker/compose during deployment.
+- Note: Per project policy, tests are PROHIBITED; do not include test plans.
+
 ### User Story 1 - [Brief Title] (Priority: P1)
 
 [Describe this user journey in plain language]
