@@ -18,6 +18,8 @@ async function main() {
   await prisma.customerNote.deleteMany()
   await prisma.customer.deleteMany()
   await prisma.staff.deleteMany()
+  await prisma.menuItem.deleteMany()
+  await prisma.menuCategory.deleteMany()
 
   console.log('🧹 Base de datos limpia.')
 
@@ -232,6 +234,112 @@ async function main() {
   })
 
   console.log('✅ 3 Reservas de prueba creadas')
+  
+  // ------------------------------------------------------------------
+  // 8. CARTA / MENÚ (Basado en los datos hardcoded originales)
+  // ------------------------------------------------------------------
+  const cartaData = [
+    {
+      name: 'ENTRANTES FRÍOS',
+      displayOrder: 1,
+      items: [
+        { name: 'Carpaccio de ventresca de atún rojo', price: '20€', displayOrder: 1 },
+        { name: 'Hueva de mújol en semi salazón con almendra marcona', price: '11€', displayOrder: 2 },
+        { name: 'Anchoa de Lolin', price: '3€', displayOrder: 3 },
+        { name: 'Nuestra marinera', price: '4.5 / 6€', displayOrder: 4 },
+        { name: 'Ensaladilla de pulpo', price: '10 / 17€', displayOrder: 5 },
+        { name: 'Sardina ahumada', price: '5€', displayOrder: 6 },
+        { name: 'Ensalada de ventresca de bonito', price: '20€', displayOrder: 7 },
+        { name: 'Ensalada de sardina ahumada', price: '19.5€', displayOrder: 8 },
+        { name: 'Cecina de Astorga', price: '10 / 17€', displayOrder: 9 },
+        { name: 'Embutidos de Guadalest Casa Gloria', price: '8 / 12€', displayOrder: 10 },
+        { name: 'Tabla de quesos', price: '10 / 16€', displayOrder: 11 }
+      ]
+    },
+    {
+      name: 'ENTRANTES CALIENTES',
+      displayOrder: 2,
+      items: [
+        { name: 'Croquetas caseras', price: '3€', displayOrder: 1 },
+        { name: 'Sepionet plancha', price: '12 / 20€', displayOrder: 2 },
+        { name: 'Puntilla encebollada / Chipirón plancha', price: '21 / 11€ unidad', displayOrder: 3 },
+        { name: 'Chipirón encebollado', price: '11€ unidad', displayOrder: 4 },
+        { name: 'Almejas a la marinera', price: '21€', displayOrder: 5 },
+        { name: 'Mejillones al vapor', price: '12€', displayOrder: 6 },
+        { name: 'Mejillones picantones', price: '12€', displayOrder: 7 },
+        { name: 'Pulpo dos cocciones', price: '22€', displayOrder: 8 }
+      ]
+    },
+    {
+      name: 'LOS MÁS ESPECIALES',
+      displayOrder: 3,
+      items: [
+        { name: 'Quisquilla 100gr.', price: '17€', displayOrder: 1 },
+        { name: 'Gamba roja 1ª', price: 'S. Mercado', displayOrder: 2 },
+        { name: 'Salpicón de langosta', price: 'S. Mercado', displayOrder: 3 }
+      ]
+    },
+    {
+      name: 'PARA DAR LA LATA',
+      displayOrder: 4,
+      items: [
+        { name: 'Caviar Tanit King Gold Lata 10 gr.', price: '30€', displayOrder: 1 },
+        { name: 'Navajas al natural Real Conservera Española', price: '22€', displayOrder: 2 },
+        { name: 'Mejillones en escabeche con papas', price: '16€', displayOrder: 3 },
+        { name: 'Sardinillas en aceite Real Conservera Española', price: '22€', displayOrder: 4 }
+      ]
+    },
+    {
+      name: 'INDIVIDUALES',
+      displayOrder: 5,
+      items: [
+        { name: 'Merluza rebozada', price: '24€', displayOrder: 1 },
+        { name: 'Ventresca de atún rojo', price: '30€', displayOrder: 2 },
+        { name: 'Solomillo de ternera', price: '25€', displayOrder: 3 }
+      ]
+    },
+    {
+      name: 'SEGUNDOS COMPARTIR (Precio por persona)',
+      displayOrder: 6,
+      items: [
+        { name: 'Rodaballo a la castreña', price: '30€', displayOrder: 1 },
+        { name: 'Cogote de merluza', price: '24€', displayOrder: 2 },
+        { name: 'Lubina a la espalda', price: '29€', displayOrder: 3 },
+        { name: 'Cherna al horno', price: '29€', displayOrder: 4 },
+        { name: 'Dentón a la espalda', price: '30€', displayOrder: 5 },
+        { name: 'Urta a la espalda', price: '29€', displayOrder: 6 },
+        { name: 'Besugo a la espalda', price: '35€', displayOrder: 7 },
+        { name: 'Cabracho al horno', price: '30€', displayOrder: 8 },
+        { name: 'Corvina a la espalda', price: '25€', displayOrder: 9 },
+        { name: 'Chuleta de vaca (Precio pieza)', price: '42€/kilo', displayOrder: 10 }
+      ]
+    },
+    {
+      name: 'Acompañamientos y Extras',
+      displayOrder: 7,
+      items: [
+        { name: 'Pan de pueblo', price: '1€ P.P.', displayOrder: 1 },
+        { name: 'Salsas extra', price: '1€', displayOrder: 2 },
+        { name: 'Aceitunas', price: '1€', displayOrder: 3 },
+        { name: 'Almendras fritas', price: '2.5€', displayOrder: 4 },
+        { name: 'Aceite Verdeliss', price: '1.5€ P.P.', displayOrder: 5 }
+      ]
+    }
+  ];
+
+  for (const cat of cartaData) {
+    await prisma.menuCategory.create({
+      data: {
+        name: cat.name,
+        displayOrder: cat.displayOrder,
+        items: {
+          create: cat.items
+        }
+      }
+    });
+  }
+
+  console.log(`✅ Carta creada con ${cartaData.length} categorías`)
   console.log('')
   console.log('🚀 SEED COMPLETADO. Resumen:')
   console.log('   👤 Staff: admin@mesonmarinero.com / admin1234')
