@@ -1,0 +1,112 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+coverage/
+.next/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-workspace
+*.sublime-project
+.vscode/launch.json
+
+# Testing
+.nyc_output/
+*.lcov
+.jest_cache/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.min.js
+*.min.css
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+migrations/
+
+# Cache
+.cache/
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma
+.env
+.env.local
+
+# Docker
+.dockerignore
+.docker/
+
+# Node
+.npm/
+.node-gyp/
+
+# IDE
+.editorconfig
+.eslintignore
+
+# Debugging
+.vscode/launch.json
+.vscode/tasks.json
+
+# Production
+.env.production*
+
+# Misc
+.DS_Store
+.AppleDouble
+.LSOverride
+._.* 
+*.0
+*~
+
+# System files
+Thumbs.db
+desktop.ini

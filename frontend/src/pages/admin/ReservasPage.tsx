@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getBookings, updateBookingStatus, createBackofficeBooking } from '../../services/api';
 import type { Booking, BookingStatus } from '../../types';
+import CustomerDetailsModal from '../../components/admin/CustomerDetailsModal';
 import './AdminPages.css';
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
@@ -31,6 +32,7 @@ const ALL_STATUSES: BookingStatus[] = [
 
 export default function ReservasPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterDate, setFilterDate] = useState('');
@@ -188,8 +190,14 @@ export default function ReservasPage() {
               <tbody>
                 {bookings.map((b) => {
                   const dt = new Date(b.date);
+                  
+                  // Helper for row class
+                  let rowClass = '';
+                  if (b.customer.isBlacklisted) rowClass = 'customer-row--blacklisted';
+                  else if (b.customer.isVip) rowClass = 'customer-row--vip';
+
                   return (
-                    <tr key={b.id}>
+                    <tr key={b.id} className={rowClass}>
                       <td style={{ whiteSpace: 'nowrap' }}>
                         {dt.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </td>
@@ -197,9 +205,41 @@ export default function ReservasPage() {
                         {dt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                       </td>
                       <td>
-                        <div className="customer-name">
-                          {b.customer.firstName} {b.customer.lastName}
-                          {b.customer.isVip && ' ⭐'}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <div
+                            className="customer-name"
+                            onClick={() => setSelectedCustomerId(b.customer.id)}
+                            style={{
+                              cursor: 'pointer',
+                              color: 'var(--primary)',
+                              textDecoration: 'underline',
+                              fontWeight: 600,
+                              whiteSpace: 'nowrap'
+                            }}
+                            title="Ver ficha del cliente"
+                          >
+                            {b.customer.firstName} {b.customer.lastName}
+                          </div>
+                          <div className="customer-badges" style={{ display: 'flex', gap: '0.25rem' }}>
+                            {b.customer.isVip && (
+                              <span className="customer-badge customer-badge--vip" title="Cliente VIP" style={{ padding: '0.1rem 0.35rem' }}>⭐</span>
+                            )}
+                            {b.customer.isBlacklisted && (
+                              <span className="customer-badge customer-badge--blacklist" title="Blacklist" style={{ padding: '0.1rem 0.35rem' }}>🚫</span>
+                            )}
+                            {b.customer.allergens && b.customer.allergens.length > 0 && (
+                              <span className="customer-badge customer-badge--allergy" title={`Alergias: ${b.customer.allergens.join(', ')}`} style={{ padding: '0.1rem 0.35rem' }}>🚨</span>
+                            )}
+                            {b.customer.tags?.filter(t => t !== 'VIP' && t !== 'BLACKLIST').map(tag => (
+                              <span 
+                                key={tag} 
+                                className="customer-badge customer-badge--tag" 
+                                style={{ padding: '0.1rem 0.4rem', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center' }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                         <div className="customer-email">{b.customer.email}</div>
                       </td>
@@ -231,6 +271,15 @@ export default function ReservasPage() {
           </div>
         )}
       </div>
+
+      {/* Reusable Customer Details Modal */}
+      {selectedCustomerId && (
+        <CustomerDetailsModal
+          customerId={selectedCustomerId}
+          onClose={() => setSelectedCustomerId(null)}
+          onUpdate={fetchBookings}
+        />
+      )}
 
       {/* Modal para añadir reserva */}
       {isModalOpen && (

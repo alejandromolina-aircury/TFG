@@ -64,6 +64,8 @@ exports.getAllBookings = asyncHandler(async (req, res) => {
             phone: true,
             isVip: true,
             isBlacklisted: true,
+            allergens: true,
+            tags: true,
             totalVisits: true
           }
         },

@@ -19,9 +19,40 @@ export interface Customer {
   phone: string;
   isVip: boolean;
   isBlacklisted: boolean;
+  blacklistReason?: string;
   allergens: string[];
+  tags: string[];
+  preferences?: string;
+  birthday?: string;
+  language: 'ES' | 'EN' | 'FR';
   totalVisits: number;
   totalNoShows: number;
+  createdAt: string;
+  updatedAt: string;
+  notes?: Array<{
+    id: string;
+    note: string;
+    createdBy: string;
+    createdAt: string;
+  }>;
+  bookings?: Booking[];
+  waitlist?: Array<{
+    id: string;
+    date: string;
+    pax: number;
+    notes?: string;
+    isResolved: boolean;
+  }>;
+  stats?: {
+    totalBookings: number;
+    completed: number;
+    cancelled: number;
+    noShows: number;
+    upcoming: number;
+    loyaltyRate: number;
+    avgDaysBetweenVisits: number;
+    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  };
 }
 
 export interface Zone {
