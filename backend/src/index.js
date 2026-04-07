@@ -23,6 +23,7 @@ const backofficeCustomerRoutes = require('./routes/backoffice/customers');
 const backofficeShiftRoutes = require('./routes/backoffice/shifts');
 const backofficeClosureRoutes = require('./routes/backoffice/closures');
 const backofficeDashboardRoutes = require('./routes/backoffice/dashboard');
+const backofficeConfigRoutes = require('./routes/backoffice/config');
 
 // --- CONFIGURACIÓN INICIAL ---
 const app = express();
@@ -97,6 +98,7 @@ app.use('/api/backoffice/customers', backofficeCustomerRoutes);
 app.use('/api/backoffice/shifts', backofficeShiftRoutes);
 app.use('/api/backoffice/closures', backofficeClosureRoutes);
 app.use('/api/backoffice/dashboard', backofficeDashboardRoutes);
+app.use('/api/backoffice/config', backofficeConfigRoutes);
 
 // 5. Ruta de Debug - Ver zonas y mesas (Solo desarrollo)
 if (NODE_ENV === 'development') {

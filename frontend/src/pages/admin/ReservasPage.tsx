@@ -1,7 +1,7 @@
 // frontend/src/pages/admin/ReservasPage.tsx
 
 import { useEffect, useState, useCallback } from 'react';
-import { getBookings, updateBookingStatus } from '../../services/api';
+import { getBookings, updateBookingStatus, createBackofficeBooking } from '../../services/api';
 import type { Booking, BookingStatus } from '../../types';
 import './AdminPages.css';
 
@@ -36,6 +36,20 @@ export default function ReservasPage() {
   const [filterDate, setFilterDate] = useState('');
   const [filterStatus, setFilterStatus] = useState<BookingStatus | ''>('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newBooking, setNewBooking] = useState({
+    date: '',
+    time: '',
+    pax: 2,
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    specialRequests: '',
+  });
 
   const fetchBookings = useCallback(() => {
     setLoading(true);
@@ -72,11 +86,43 @@ export default function ReservasPage() {
     }
   };
 
+  const handleCreateBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await createBackofficeBooking({
+        date: newBooking.date,
+        time: newBooking.time,
+        pax: newBooking.pax,
+        customer: {
+          firstName: newBooking.firstName,
+          lastName: newBooking.lastName,
+          email: newBooking.email,
+          phone: newBooking.phone,
+        },
+        specialRequests: newBooking.specialRequests,
+        source: 'BACKOFFICE'
+      });
+      setIsModalOpen(false);
+      setNewBooking({ date: '', time: '', pax: 2, firstName: '', lastName: '', email: '', phone: '', specialRequests: '' });
+      fetchBookings();
+    } catch (err) {
+      alert('Error al crear la reserva. Verifica los datos o disponibilidad.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div>
-      <div className="page-header">
-        <h1>Reservas</h1>
-        <p>Gestión y seguimiento de todas las reservas</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Reservas</h1>
+          <p>Gestión y seguimiento de todas las reservas</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+          + Añadir Reserva
+        </button>
       </div>
 
       <div className="section-card">
@@ -185,6 +231,69 @@ export default function ReservasPage() {
           </div>
         )}
       </div>
+
+      {/* Modal para añadir reserva */}
+      {isModalOpen && (
+        <div className="admin-modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="admin-modal" onClick={e => e.stopPropagation()}>
+            <div className="admin-modal__header">
+              <h2>Nueva Reserva (Manual)</h2>
+              <button className="admin-modal__close" onClick={() => setIsModalOpen(false)}>✕</button>
+            </div>
+            <form onSubmit={handleCreateBooking}>
+              <div className="admin-modal__body">
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Fecha</label>
+                    <input type="date" value={newBooking.date} onChange={e => setNewBooking({ ...newBooking, date: e.target.value })} />
+                  </div>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Hora</label>
+                    <input type="time" value={newBooking.time} onChange={e => setNewBooking({ ...newBooking, time: e.target.value })} />
+                  </div>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Comensales</label>
+                    <input type="number" min="1" max="20" value={newBooking.pax} onChange={e => setNewBooking({ ...newBooking, pax: parseInt(e.target.value) || 1 })} />
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Nombre</label>
+                    <input type="text" value={newBooking.firstName} onChange={e => setNewBooking({ ...newBooking, firstName: e.target.value })} />
+                  </div>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Apellidos</label>
+                    <input type="text" value={newBooking.lastName} onChange={e => setNewBooking({ ...newBooking, lastName: e.target.value })} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Email</label>
+                    <input type="email" value={newBooking.email} onChange={e => setNewBooking({ ...newBooking, email: e.target.value })} />
+                  </div>
+                  <div className="admin-modal__form-group" style={{ flex: 1 }}>
+                    <label>Teléfono</label>
+                    <input type="tel" value={newBooking.phone} onChange={e => setNewBooking({ ...newBooking, phone: e.target.value })} />
+                  </div>
+                </div>
+
+                <div className="admin-modal__form-group">
+                  <label>Observaciones</label>
+                  <textarea rows={2} value={newBooking.specialRequests} onChange={e => setNewBooking({ ...newBooking, specialRequests: e.target.value })}></textarea>
+                </div>
+              </div>
+              <div className="admin-modal__footer">
+                <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? 'Guardando...' : 'Crear Reserva'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
