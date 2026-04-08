@@ -1,8 +1,22 @@
-// backend/src/controllers/public/availabilityController.js
-
 const availabilityService = require('../services/availabilityService');
 const validationService = require('../services/validationService');
+const configService = require('../services/configService');
 const { asyncHandler } = require('../middleware/errorHandler');
+
+/**
+ * GET /api/public/availability/config
+ * Obtiene configuración pública (ej. max comensales)
+ */
+exports.getPublicConfig = asyncHandler(async (req, res) => {
+  const maxPax = await configService.getMaxPax();
+  
+  res.json({
+    status: 'success',
+    data: {
+      maxPax
+    }
+  });
+});
 
 /**
  * GET /api/public/availability/calendar
@@ -32,7 +46,7 @@ exports.getAvailableCalendar = asyncHandler(async (req, res) => {
   }
   
   // Validar número de comensales
-  const paxValidation = validationService.validatePaxCount(numPax);
+  const paxValidation = await validationService.validatePaxCount(numPax);
   if (!paxValidation.valid) {
     return res.status(400).json({
       status: 'error',
@@ -80,7 +94,7 @@ exports.getAvailableTimes = asyncHandler(async (req, res) => {
   
   validationService.validateBookingDate(date);
   
-  const paxValidation = validationService.validatePaxCount(pax);
+  const paxValidation = await validationService.validatePaxCount(pax);
   if (!paxValidation.valid) {
     return res.status(400).json({
       status: 'error',
@@ -125,7 +139,7 @@ exports.checkAvailability = asyncHandler(async (req, res) => {
   validationService.validateBookingDate(date);
   validationService.validateBookingTime(date, time);
   
-  const paxValidation = validationService.validatePaxCount(pax);
+  const paxValidation = await validationService.validatePaxCount(pax);
   if (!paxValidation.valid) {
     return res.status(400).json({
       status: 'error',

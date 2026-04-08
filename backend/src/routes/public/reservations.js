@@ -9,6 +9,10 @@ const reservationController = require('../../controllers/reservationController')
 
 // --- RUTAS DE DISPONIBILIDAD ---
 
+// GET /api/public/reservations/availability/config
+// Obtener configuración pública
+router.get('/availability/config', availabilityController.getPublicConfig);
+
 // GET /api/public/reservations/availability/calendar
 // Obtener días disponibles en un mes
 router.get('/availability/calendar', availabilityController.getAvailableCalendar);

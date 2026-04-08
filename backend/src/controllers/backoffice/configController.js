@@ -1,11 +1,9 @@
 const prisma = require('../../config/database');
 const { asyncHandler } = require('../../middleware/errorHandler');
+const configService = require('../../services/configService');
 
 exports.getConfig = asyncHandler(async (req, res) => {
-  const configs = await prisma.systemConfig.findMany();
-  
-  const configMap = {};
-  configs.forEach(c => configMap[c.key] = c.value);
+  const configMap = await configService.getFullConfig();
   
   res.json({
     status: 'success',
@@ -22,6 +20,9 @@ exports.updateConfig = asyncHandler(async (req, res) => {
   }
 
   for (const [key, value] of Object.entries(updates)) {
+    // Evitar que sobrescriban las métricas dinámicas
+    if (['dynamic_max_capacity', 'dynamic_max_pax', 'dynamic_active_tables'].includes(key)) continue;
+
     await prisma.systemConfig.upsert({
       where: { key },
       update: { value: String(value) },
@@ -29,9 +30,7 @@ exports.updateConfig = asyncHandler(async (req, res) => {
     });
   }
   
-  const allConfigs = await prisma.systemConfig.findMany();
-  const configMap = {};
-  allConfigs.forEach(c => configMap[c.key] = c.value);
+  const configMap = await configService.getFullConfig();
 
   res.json({
     status: 'success',
