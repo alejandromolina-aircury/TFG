@@ -150,9 +150,9 @@ exports.sendBookingConfirmation = async (booking, customer) => {
         <span>${booking.table?.zone?.name || 'Salón Principal'}</span>
       </div>
     </div>
-    <p>Te esperamos en <strong>${RESTAURANT_NAME}</strong>. Si necesitas cancelar o modificar tu reserva, puedes hacerlo a través de nuestra web o llamándonos directamente.</p>
-    <div style="text-align: center;">
-        <a href="https://mesonmarinero.com/reservas/gestion" class="button">Gestionar Reserva</a>
+    <p>Te esperamos en <strong>${RESTAURANT_NAME}</strong>. Por motivos de gestión, si necesitas <strong>cancelar o modificar</strong> tu reserva, por favor hazlo <strong>llamando directamente al restaurante</strong>.</p>
+    <div style="text-align: center; margin-top: 20px; color: #777;">
+        <p>☎️ Teléfono: 956 00 00 00</p>
     </div>
   `;
 
