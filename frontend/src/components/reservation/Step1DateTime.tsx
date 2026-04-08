@@ -1,7 +1,5 @@
-// frontend/src/components/reservation/Step1DateTime.tsx
-
 import { useState, useEffect } from 'react';
-import { getAvailableTimes } from '../../services/api';
+import { getAvailableTimes, getPublicConfig } from '../../services/api';
 import type { TimeSlot } from '../../types';
 
 interface Props {
@@ -13,11 +11,18 @@ export default function Step1DateTime({ onNext }: Props) {
 
   const [date, setDate] = useState('');
   const [pax, setPax] = useState(2);
+  const [maxPax, setMaxPax] = useState(12); // Default to 12
   const [selectedTime, setSelectedTime] = useState('');
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [slotsError, setSlotsError] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    getPublicConfig().then(data => {
+      if (data.maxPax) setMaxPax(data.maxPax);
+    }).catch(err => console.error('Error fetching public config:', err));
+  }, []);
 
   useEffect(() => {
     if (!date || !pax) return;
@@ -27,7 +32,7 @@ export default function Step1DateTime({ onNext }: Props) {
     setLoadingSlots(true);
     getAvailableTimes(date, pax)
       .then((data) => {
-        const available = data.filter((s) => s.available);
+        const available = data.filter((s: TimeSlot) => s.available);
         if (available.length === 0) {
           setSlotsError('No hay horarios disponibles para este día y número de comensales. Prueba con otra fecha.');
         }
@@ -69,7 +74,7 @@ export default function Step1DateTime({ onNext }: Props) {
               value={pax}
               onChange={(e) => setPax(Number(e.target.value))}
             >
-              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+              {Array.from({ length: maxPax }, (_, i) => i + 1).map((n) => (
                 <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>
               ))}
             </select>

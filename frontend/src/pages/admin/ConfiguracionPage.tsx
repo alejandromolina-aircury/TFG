@@ -80,15 +80,15 @@ export default function ConfiguracionPage() {
     {
       title: '🪑 Capacidad',
       rows: [
-        { label: 'Aforo máximo', value: '80 comensales' },
-        { label: 'Mesas activas', value: 'Ver sección Mesas' },
+        { label: 'Aforo máximo', value: `${systemConfig.dynamic_max_capacity || '—'} comensales` },
+        { label: 'Mesas activas', value: `${systemConfig.dynamic_active_tables || '—'} mesas` },
         { label: 'Duración media reserva', value: '90–120 min' },
       ],
     },
     {
       title: '🔧 Sistema',
       rows: [
-        { label: 'Versión API', value: '2.0.0' },
+        { label: 'Versión API', value: '2.4.0' },
         { label: 'Entorno', value: import.meta.env.MODE },
         { label: 'Zona horaria', value: 'Europe/Madrid (CET/CEST)' },
       ],

@@ -52,6 +52,15 @@ export async function getAvailableCalendar(year: number, month: number, pax: num
 }
 
 /**
+ * Get public config (max pax, etc.)
+ * GET /api/public/reservations/availability/config
+ */
+export async function getPublicConfig() {
+  const { data } = await api.get('/public/reservations/availability/config');
+  return data.data as { maxPax: number };
+}
+
+/**
  * Get available time slots for a given date and party size
  * POST /api/public/reservations/availability/times
  */
