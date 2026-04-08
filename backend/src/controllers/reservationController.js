@@ -31,7 +31,7 @@ exports.createReservation = asyncHandler(async (req, res) => {
   } = req.body;
   
   // Validación completa de los datos
-  validationService.validateBookingData({
+  await validationService.validateBookingData({
     date,
     time,
     pax,
