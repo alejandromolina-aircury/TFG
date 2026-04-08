@@ -1,13 +1,12 @@
-// backend/src/services/validationService.js
-
 const { PAX, AVAILABILITY } = require('../config/constants');
 const { ValidationError } = require('../middleware/errorHandler');
 const { isDateInBookableRange, meetsMinimumAdvanceTime } = require('../utils/dateHelpers');
+const prisma = require('../config/database');
 
 /**
- * Valida el número de comensales
+ * Valida el número de comensales de forma dinámica
  */
-function validatePaxCount(pax) {
+async function validatePaxCount(pax) {
   const numPax = parseInt(pax);
   
   if (isNaN(numPax) || numPax < 1) {
@@ -25,11 +24,19 @@ function validatePaxCount(pax) {
       code: 'PAX_BELOW_MIN'
     };
   }
+
+  // Obtener el máximo real de la base de datos (mayor mesa)
+  const maxTable = await prisma.table.findFirst({
+    where: { isActive: true },
+    orderBy: { maxCapacity: 'desc' }
+  });
   
-  if (numPax > PAX.MAX) {
+  const currentMax = maxTable ? maxTable.maxCapacity : PAX.MAX;
+  
+  if (numPax > currentMax) {
     return {
       valid: false,
-      message: PAX.CONTACT_MESSAGE,
+      message: `Para grupos de más de ${currentMax} personas, por favor contacte directamente con el restaurante.`,
       code: 'PAX_ABOVE_MAX'
     };
   }
@@ -161,7 +168,7 @@ function validateCustomerData(data) {
 /**
  * Valida datos completos de reserva
  */
-function validateBookingData(data) {
+async function validateBookingData(data) {
   const errors = [];
   
   // Validar fecha
@@ -179,7 +186,7 @@ function validateBookingData(data) {
   }
   
   // Validar comensales
-  const paxValidation = validatePaxCount(data.pax);
+  const paxValidation = await validatePaxCount(data.pax);
   if (!paxValidation.valid) {
     errors.push(paxValidation.message);
   }
