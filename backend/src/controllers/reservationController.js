@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const prisma = require('../config/database');
 const customerService = require('../services/customerService');
+const emailService = require('../services/emailService');
 const tableAssignmentService = require('../services/tableAssignmentService');
 const validationService = require('../services/validationService');
 const { asyncHandler, BusinessError } = require('../middleware/errorHandler');
@@ -100,8 +101,8 @@ exports.createReservation = asyncHandler(async (req, res) => {
   
   console.log(`✅ Reserva creada: ${booking.id}`);
   
-  // TODO: Enviar email de confirmación (cuando implementes emailService)
-  // await emailService.sendBookingConfirmation(booking, customer);
+  // Enviar email de confirmación
+  emailService.sendBookingConfirmation(booking, customer);
   
   res.status(201).json({
     status: 'success',
@@ -223,8 +224,8 @@ exports.cancelReservation = asyncHandler(async (req, res) => {
   
   console.log(`❌ Reserva cancelada: ${booking.id}`);
   
-  // TODO: Enviar email de cancelación
-  // await emailService.sendBookingCancellation(updated, booking.customer);
+  // Enviar email de cancelación
+  emailService.sendBookingCancellation(updated, booking.customer);
   
   res.json({
     status: 'success',
