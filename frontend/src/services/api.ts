@@ -281,6 +281,15 @@ export async function getPublicMenu() {
 }
 
 /**
+ * Get public Google reviews
+ * GET /api/public/reviews
+ */
+export async function getReviews() {
+  const { data } = await api.get('/public/reviews');
+  return data.data;
+}
+
+/**
  * Get backoffice menu categories with items
  * GET /api/backoffice/menu/categories
  */
