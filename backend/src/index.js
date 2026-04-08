@@ -16,6 +16,7 @@ const authRoutes = require('./routes/auth');
 // Rutas públicas (Frontend cliente)
 const publicReservationRoutes = require('./routes/public/reservations');
 const publicMenuRoutes = require('./routes/public/menu');
+const publicReviewsRoutes = require('./routes/public/reviews');
 
 // Rutas back-office (Panel de gestión)
 const backofficeBookingRoutes = require('./routes/backoffice/bookings');
@@ -92,6 +93,7 @@ app.use('/api/auth', authRoutes);
 // 4. APIs PÚBLICAS (Frontend Cliente)
 app.use('/api/public/reservations', publicReservationRoutes);
 app.use('/api/public/menu', publicMenuRoutes);
+app.use('/api/public/reviews', publicReviewsRoutes);
 
 // 5. APIs BACK-OFFICE (Panel de Gestión) — protegidas con JWT
 app.use('/api/backoffice', authMiddleware);
