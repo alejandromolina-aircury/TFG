@@ -60,6 +60,16 @@ async function getAvailableDaysInMonth(year, month, pax, zoneId = null) {
     });
     
     if (isClosedFully) continue;
+
+    // Comprobar si el restaurante abre este día de la semana
+    const openingDaysConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'opening_days' }
+    });
+    
+    if (openingDaysConfig) {
+      const openingDays = openingDaysConfig.value.split(',').map(Number);
+      if (!openingDays.includes(dayOfWeek)) continue;
+    }
     
     // Comprobar si hay algún turno disponible este día
     const hasAvailableShift = shifts.some(shift => 
@@ -125,6 +135,18 @@ async function getAvailableTimesForDay(dateStr, pax, zoneId = null) {
   
   const date = new Date(dateStr);
   const dayOfWeek = getDayOfWeek(date);
+
+  // Comprobar si el restaurante abre este día de la semana
+  const openingDaysConfig = await prisma.systemConfig.findUnique({
+    where: { key: 'opening_days' }
+  });
+  
+  if (openingDaysConfig) {
+    const openingDays = openingDaysConfig.value.split(',').map(Number);
+    if (!openingDays.includes(dayOfWeek)) {
+      return { times: [], shifts: [], message: 'El restaurante está cerrado este día' };
+    }
+  }
   
   // Obtener turnos activos para este día
   const shifts = await prisma.shift.findMany({
@@ -214,6 +236,24 @@ async function checkAvailability(dateStr, timeStr, pax, zoneId = null) {
       message: 'La fecha está fuera del rango permitido para reservas',
       suggestions: []
     };
+  }
+
+  const date = new Date(dateStr);
+  const dayOfWeek = getDayOfWeek(date);
+
+  // Comprobar si el restaurante abre este día de la semana
+  const openingDaysConfig = await prisma.systemConfig.findUnique({
+    where: { key: 'opening_days' }
+  });
+  
+  if (openingDaysConfig) {
+    const openingDays = openingDaysConfig.value.split(',').map(Number);
+    if (!openingDays.includes(dayOfWeek)) {
+      return {
+        available: false,
+        message: 'El restaurante está cerrado los días seleccionados'
+      };
+    }
   }
   
   if (!meetsMinimumAdvanceTime(dateStr, timeStr)) {

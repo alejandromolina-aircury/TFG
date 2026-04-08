@@ -60,6 +60,7 @@ export default function ConfiguracionPage() {
       restaurant_address: systemConfig.restaurant_address || 'Calle del Puerto, 12 — Alicante',
       restaurant_phone: systemConfig.restaurant_phone || '965 00 00 00',
       restaurant_email: systemConfig.restaurant_email || 'info@mesonmarinero.es',
+      opening_days: systemConfig.opening_days || '1,2,3,4,5,6,0',
     });
     setEditingConfig(true);
   };
@@ -150,23 +151,47 @@ export default function ConfiguracionPage() {
             
             {loading ? (
                 <div className="state-loading"><span className="spinner">⌛</span></div>
-            ) : shifts.length === 0 ? (
-                <div className="state-empty">No hay turnos configurados.</div>
             ) : (
-                shifts.map((shift) => (
-                    <div className="config-row" key={shift.id} style={{ alignItems: 'flex-start' }}>
+                <>
+                    <div className="config-row" style={{ backgroundColor: 'var(--bg-light)', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', border: '1px solid var(--border)' }}>
                         <div>
-                            <div className="config-row__label">{shift.name} {shift.isActive ? '' : '(Inactivo)'}</div>
-                            <div className="config-row__value" style={{ marginTop: '0.25rem' }}>{shift.startTime} – {shift.endTime} (Intervalo: {shift.slotInterval} min)</div>
+                            <div className="config-row__label">📅 Días de apertura semanal</div>
+                            <div className="config-row__value" style={{ marginTop: '0.5rem', fontWeight: 600, color: 'var(--primary)', fontSize: '1rem' }}>
+                                {systemConfig.opening_days 
+                                    ? systemConfig.opening_days.split(',').sort((a:any, b:any) => {
+                                        const order = [1, 2, 3, 4, 5, 6, 0];
+                                        return order.indexOf(parseInt(a)) - order.indexOf(parseInt(b));
+                                    }).map((d: any) => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][parseInt(d)]).join(', ')
+                                    : 'Todos los días'}
+                            </div>
                         </div>
                         <button 
-                          onClick={() => handleEditShiftClick(shift)} 
-                          style={{ cursor: 'pointer', padding: '0.4rem 0.75rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}
+                            onClick={handleEditConfigClick} 
+                            style={{ cursor: 'pointer', padding: '0.4rem 0.75rem', background: 'var(--bg-light)', color: 'var(--primary)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}
                         >
-                            Editar
+                            Cambiar
                         </button>
                     </div>
-                ))
+
+                    {shifts.length === 0 ? (
+                        <div className="state-empty">No hay turnos configurados.</div>
+                    ) : (
+                        shifts.map((shift) => (
+                            <div className="config-row" key={shift.id} style={{ alignItems: 'flex-start' }}>
+                                <div>
+                                    <div className="config-row__label">{shift.name} {shift.isActive ? '' : '(Inactivo)'}</div>
+                                    <div className="config-row__value" style={{ marginTop: '0.25rem' }}>{shift.startTime} – {shift.endTime} (Intervalo: {shift.slotInterval} min)</div>
+                                </div>
+                                <button 
+                                  onClick={() => handleEditShiftClick(shift)} 
+                                  style={{ cursor: 'pointer', padding: '0.4rem 0.75rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}
+                                >
+                                    Editar
+                                </button>
+                            </div>
+                        ))
+                    )}
+                </>
             )}
         </div>
 
@@ -300,6 +325,54 @@ export default function ConfiguracionPage() {
                     value={configForm.restaurant_email}
                     onChange={(e) => setConfigForm({...configForm, restaurant_email: e.target.value})}
                   />
+                </div>
+                <div className="admin-modal__form-group">
+                  <label>Días de apertura semanal</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                    {[
+                      { id: 1, label: 'L' },
+                      { id: 2, label: 'M' },
+                      { id: 3, label: 'X' },
+                      { id: 4, label: 'J' },
+                      { id: 5, label: 'V' },
+                      { id: 6, label: 'S' },
+                      { id: 0, label: 'D' },
+                    ].map((day) => {
+                      const days = configForm.opening_days ? configForm.opening_days.split(',') : [];
+                      const isSelected = days.includes(day.id.toString());
+                      return (
+                        <button
+                          key={day.id}
+                          type="button"
+                          onClick={() => {
+                            let newDays;
+                            if (isSelected) {
+                              newDays = days.filter((d: string) => d !== day.id.toString());
+                            } else {
+                              newDays = [...days, day.id.toString()];
+                            }
+                            setConfigForm({ ...configForm, opening_days: newDays.join(',') });
+                          }}
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            border: '1px solid var(--border)',
+                            background: isSelected ? 'var(--primary)' : 'transparent',
+                            color: isSelected ? 'white' : 'inherit',
+                            fontWeight: 600,
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {day.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </form>
             </div>
