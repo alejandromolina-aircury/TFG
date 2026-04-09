@@ -1,4 +1,3 @@
-// backend/src/tests/setup.js
 import { vi } from 'vitest';
 
 // Desactivar logs de Winston durante los tests para tener una salida limpia
@@ -19,6 +18,11 @@ const mockPrisma = {
   },
   shift: {
     findMany: vi.fn(),
+  },
+  customer: {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    create: vi.fn(),
   },
   table: {
     findMany: vi.fn(),

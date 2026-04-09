@@ -1,4 +1,3 @@
-// frontend/src/components/reservation/Step2User.tsx
 
 import { useState } from 'react';
 import { createReservation } from '../../services/api';

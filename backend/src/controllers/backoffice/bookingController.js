@@ -1,4 +1,3 @@
-// backend/src/controllers/backoffice/bookingController.js
 
 const prisma = require('../../config/database');
 const customerService = require('../../services/customerService');

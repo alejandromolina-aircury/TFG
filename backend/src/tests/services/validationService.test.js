@@ -1,13 +1,12 @@
-// backend/src/services/validationService.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-const prisma = require('../config/database');
+const prisma = require('../../config/database');
 import { 
   validatePaxCount, 
   validateEmail, 
   validatePhone, 
   validateBookingDate,
   validateAllergens 
-} from './validationService';
+} from '../../services/validationService';
 
 describe('validationService', () => {
   beforeEach(() => {

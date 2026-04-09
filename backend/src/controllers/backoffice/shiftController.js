@@ -1,4 +1,3 @@
-// backend/src/controllers/backoffice/shiftController.js
 
 const prisma = require('../../config/database');
 const { asyncHandler, BusinessError } = require('../../middleware/errorHandler');

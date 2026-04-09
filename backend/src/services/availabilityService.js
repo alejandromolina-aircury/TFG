@@ -1,4 +1,3 @@
-// backend/src/services/availabilityService.js
 
 const prisma = require('../config/database');
 const { 

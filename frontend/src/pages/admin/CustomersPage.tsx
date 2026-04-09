@@ -1,11 +1,10 @@
-// frontend/src/pages/admin/CustomersPage.tsx
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getCustomers } from '../../services/api';
 import type { Customer } from '../../types';
 import CustomerDetailsModal from '../../components/admin/CustomerDetailsModal';
-import './CustomersPage.css';
+import '../../styles/pages/admin/CustomersPage.css';
 
 export default function CustomersPage() {
   const [searchParams, setSearchParams] = useSearchParams();

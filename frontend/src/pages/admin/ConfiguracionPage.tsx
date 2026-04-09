@@ -1,7 +1,6 @@
-// frontend/src/pages/admin/ConfiguracionPage.tsx
 
 import { useState, useEffect } from 'react';
-import './AdminPages.css';
+import '../../styles/pages/admin/AdminPages.css';
 import { getShifts, updateShift, getSystemConfig, updateSystemConfig } from '../../services/api';
 
 export default function ConfiguracionPage() {

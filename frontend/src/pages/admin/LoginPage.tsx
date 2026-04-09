@@ -1,9 +1,8 @@
-// frontend/src/pages/admin/LoginPage.tsx
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authLogin } from '../../services/api';
-import './LoginPage.css';
+import '../../styles/pages/admin/LoginPage.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();

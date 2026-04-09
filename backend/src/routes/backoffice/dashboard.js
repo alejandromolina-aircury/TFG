@@ -1,4 +1,3 @@
-// backend/src/routes/backoffice/dashboard.js
 
 const express = require('express');
 const router = express.Router();

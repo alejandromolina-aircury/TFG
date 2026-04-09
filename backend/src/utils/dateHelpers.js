@@ -1,4 +1,3 @@
-// backend/src/utils/dateHelpers.js
 
 const { AVAILABILITY } = require('../config/constants');
 

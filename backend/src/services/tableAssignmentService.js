@@ -1,4 +1,3 @@
-// backend/src/services/tableAssignmentService.js
 
 const prisma = require('../config/database');
 const { calculateDuration, sortTablesByScore } = require('../utils/tableHelpers');
