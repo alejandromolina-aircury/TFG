@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => {
           target: env.BACKEND_URL || 'http://localhost:4000',
           changeOrigin: true,
         },
+        '/socket.io': {
+          target: env.BACKEND_URL || 'http://localhost:4000',
+          changeOrigin: true,
+          ws: true,
+        },
       },
     },
   }
