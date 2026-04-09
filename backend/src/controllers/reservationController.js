@@ -7,6 +7,7 @@ const emailService = require('../services/emailService');
 const tableAssignmentService = require('../services/tableAssignmentService');
 const validationService = require('../services/validationService');
 const { asyncHandler, BusinessError } = require('../middleware/errorHandler');
+const { emitToBackoffice } = require('../socketManager');
 const { combineDateAndTime } = require('../utils/dateHelpers');
 const { calculateDuration } = require('../utils/tableHelpers');
 const { BOOKING_SOURCE, BOOKING_STATUS } = require('../config/constants');
@@ -100,6 +101,17 @@ exports.createReservation = asyncHandler(async (req, res) => {
   });
   
   console.log(`✅ Reserva creada: ${booking.id}`);
+
+  emitToBackoffice('new_reservation', {
+    id: booking.id,
+    date: booking.date,
+    pax: booking.pax,
+    status: booking.status,
+    tableName: booking.table?.name || null,
+    zoneName: booking.table?.zone?.name || null,
+    customerName: `${customer.firstName} ${customer.lastName}`,
+    customerEmail: customer.email
+  });
   
   // Enviar email de confirmación
   emailService.sendBookingConfirmation(booking, customer);
