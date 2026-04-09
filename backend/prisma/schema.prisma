@@ -33,6 +33,9 @@ model Customer {
   totalVisits     Int            @default(0)
   isVip           Boolean        @default(false)
   isBlacklisted   Boolean        @default(false)
+  previousEmails  String[]       @default([])
+  previousPhones  String[]       @default([])
+  previousNames   String[]       @default([])
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   blacklistReason String?
