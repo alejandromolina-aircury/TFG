@@ -6,6 +6,7 @@ import LoginPage from './pages/admin/LoginPage';
 import AdminLayout from './pages/admin/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
 import ReservasPage from './pages/admin/ReservasPage';
+import { SocketProvider } from './context/SocketContext';
 import MesasPage from './pages/admin/MesasPage';
 import CustomersPage from './pages/admin/CustomersPage';
 import ConfiguracionPage from './pages/admin/ConfiguracionPage';
@@ -35,7 +36,9 @@ export default function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <AdminLayout />
+              <SocketProvider>
+                <AdminLayout />
+              </SocketProvider>
             </ProtectedRoute>
           }
         >

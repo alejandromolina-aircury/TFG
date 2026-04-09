@@ -16,6 +16,7 @@ export default function Step2User({ bookingData, onNext, onBack }: Props) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
+  const [allergies, setAllergies] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,7 +39,13 @@ export default function Step2User({ bookingData, onNext, onBack }: Props) {
         time: bookingData.time,
         pax: bookingData.pax,
         specialRequests: specialRequests.trim() || undefined,
-        customer: { firstName, lastName, email, phone },
+        customer: { 
+          firstName, 
+          lastName, 
+          email, 
+          phone,
+          allergens: allergies.trim() ? allergies.split(',').map(s => s.trim()) : undefined
+        },
       });
       onNext(result);
     } catch (err: unknown) {
@@ -105,12 +112,24 @@ export default function Step2User({ bookingData, onNext, onBack }: Props) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="u-requests">Peticiones especiales</label>
+          <label htmlFor="u-allergies">Alergias / Intolerancias</label>
+          <textarea
+            id="u-allergies"
+            placeholder="Ej: Gluten, marisco, frutos secos..."
+            value={allergies}
+            onChange={(e) => setAllergies(e.target.value)}
+            rows={2}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="u-requests">Otras peticiones especiales</label>
           <textarea
             id="u-requests"
-            placeholder="Alergias, silla para bebé, aniversario..."
+            placeholder="Silla para bebé, aniversario, mesa tranquila..."
             value={specialRequests}
             onChange={(e) => setSpecialRequests(e.target.value)}
+            rows={2}
           />
         </div>
 

@@ -1,11 +1,13 @@
 // backend/src/index.js
 
 require('dotenv').config();
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const prisma = require('./config/database');
+const { initSocketServer } = require('./socketManager');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { authMiddleware } = require('./middleware/authMiddleware');
 
@@ -30,6 +32,7 @@ const backofficeMenuRoutes = require('./routes/backoffice/menu');
 
 // --- CONFIGURACIÓN INICIAL ---
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -171,8 +174,9 @@ async function startServer() {
       console.log(`📊 Datos: ${zoneCount} zonas, ${tableCount} mesas`);
     }
 
-    // Iniciar servidor HTTP
-    app.listen(PORT, () => {
+    // Iniciar servidor Socket.io + HTTP
+    initSocketServer(server);
+    server.listen(PORT, () => {
       console.log('');
       console.log('═══════════════════════════════════════════');
       console.log('🚀 MOTOR DE RESERVAS API v2.0');
