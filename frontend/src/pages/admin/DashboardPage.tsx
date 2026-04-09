@@ -1,8 +1,9 @@
 // frontend/src/pages/admin/DashboardPage.tsx
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getDashboard } from '../../services/api';
-import type { DashboardData, BookingStatus } from '../../types';
+import { useSocket } from '../../context/useSocket';
+import type { DashboardData, BookingStatus, NewReservationEventPayload } from '../../types';
 import './AdminPages.css';
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
@@ -39,13 +40,40 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notification, setNotification] = useState<string | null>(null);
+  const { socket } = useSocket();
+
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const dashboard = await getDashboard();
+      setData(dashboard);
+      setError('');
+    } catch {
+      setError('No se pudo cargar el panel. Verifica la conexión con el servidor.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    getDashboard()
-      .then(setData)
-      .catch(() => setError('No se pudo cargar el panel. Verifica la conexión con el servidor.'))
-      .finally(() => setLoading(false));
-  }, []);
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleNewReservation = (payload: NewReservationEventPayload) => {
+      const zoneLabel = payload.zoneName ? ` en ${payload.zoneName}` : '';
+      setNotification(`Nueva reserva de ${payload.customerName} (${payload.pax} pax)${zoneLabel}. Actualizando panel...`);
+      fetchDashboard();
+    };
+
+    socket.on('new_reservation', handleNewReservation);
+    return () => {
+      socket.off('new_reservation', handleNewReservation);
+    };
+  }, [socket, fetchDashboard]);
 
   if (loading) return (
     <div className="state-loading">
@@ -71,6 +99,23 @@ export default function DashboardPage() {
         <h1>Panel de Control</h1>
         <p>Resumen del día para Mesón Marinero</p>
       </div>
+
+      {notification && (
+        <div className="section-card section-card--alert" style={{ marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+            <div>
+              <strong>Notificación en vivo:</strong> {notification}
+            </div>
+            <button
+              className="btn btn-ghost"
+              onClick={() => setNotification(null)}
+              style={{ fontSize: '0.85rem', padding: '0.4rem 0.75rem' }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Widgets */}
       <div className="widgets-grid">
