@@ -1,4 +1,3 @@
-// backend/src/services/customerService.js
 
 const prisma = require('../config/database');
 const { BusinessError, ValidationError } = require('../middleware/errorHandler');

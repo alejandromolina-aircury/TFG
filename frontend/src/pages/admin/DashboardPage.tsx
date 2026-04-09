@@ -1,10 +1,9 @@
-// frontend/src/pages/admin/DashboardPage.tsx
 
 import { useCallback, useEffect, useState } from 'react';
 import { getDashboard } from '../../services/api';
 import { useSocket } from '../../context/useSocket';
 import type { DashboardData, BookingStatus, NewReservationEventPayload } from '../../types';
-import './AdminPages.css';
+import '../../styles/pages/admin/AdminPages.css';
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
   PENDING: 'Pendiente',

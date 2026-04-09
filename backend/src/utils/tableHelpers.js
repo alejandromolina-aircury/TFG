@@ -1,4 +1,3 @@
-// backend/src/utils/tableHelpers.js
 
 const { DURATION } = require('../config/constants');
 

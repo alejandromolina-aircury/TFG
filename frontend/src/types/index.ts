@@ -1,4 +1,3 @@
-// frontend/src/types/index.ts
 
 export type BookingStatus =
   | 'PENDING'

@@ -1,4 +1,3 @@
-// backend/src/controllers/backoffice/zoneController.js
 
 const prisma = require('../../config/database');
 const { asyncHandler } = require('../../middleware/errorHandler');

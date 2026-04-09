@@ -1,8 +1,7 @@
-// frontend/src/pages/admin/AdminLayout.tsx
 
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import './AdminLayout.css';
+import '../../styles/pages/admin/AdminLayout.css';
 
 const navLinks = [
   { to: '/admin', label: 'Panel', icon: '📊', end: true },

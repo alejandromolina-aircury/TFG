@@ -1,8 +1,7 @@
-// frontend/src/pages/admin/MesasPage.tsx
 
 import { useEffect, useState } from 'react';
 import { getZones, createZone, updateZone, createTable, updateTable, deleteTable, deleteZone } from '../../services/api';
-import './AdminPages.css';
+import '../../styles/pages/admin/AdminPages.css';
 
 interface TableItem {
   id: number;

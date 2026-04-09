@@ -9,7 +9,7 @@ import {
   deleteMenuItem,
   reorderMenuCategories
 } from '../../services/api';
-import './AdminPages.css';
+import '../../styles/pages/admin/AdminPages.css';
 
 // DnD Kit Imports
 import {

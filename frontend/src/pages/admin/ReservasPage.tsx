@@ -1,11 +1,10 @@
-// frontend/src/pages/admin/ReservasPage.tsx
 
 import { useEffect, useState, useCallback } from 'react';
 import { getBookings, updateBookingStatus, createBackofficeBooking } from '../../services/api';
 import { useSocket } from '../../context/useSocket';
 import type { Booking, BookingStatus, NewReservationEventPayload } from '../../types';
 import CustomerDetailsModal from '../../components/admin/CustomerDetailsModal';
-import './AdminPages.css';
+import '../../styles/pages/admin/AdminPages.css';
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
   PENDING: 'Pendiente',

@@ -1,4 +1,3 @@
-// backend/src/config/database.js
 
 const { PrismaClient } = require('@prisma/client');
 
