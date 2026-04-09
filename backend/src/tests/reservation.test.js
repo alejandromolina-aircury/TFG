@@ -1,4 +1,3 @@
-// backend/src/tests/reservation.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../index';
@@ -31,12 +30,20 @@ describe('Reservation Integration Tests', () => {
       prisma.table.findMany.mockResolvedValue([
         { id: 1, name: 'Mesa 1', minCapacity: 2, maxCapacity: 4, isActive: true, zone: { name: 'Sala' } }
       ]);
+      prisma.customer.findUnique.mockResolvedValue(null);
+      prisma.customer.create.mockResolvedValue({
+        id: 1,
+        ...bookingData.customer,
+        isBlacklisted: false
+      });
       prisma.booking.findMany.mockResolvedValue([]);
       prisma.booking.create.mockResolvedValue({
         id: 'new-id',
         confirmationCode: 'ABC-123',
         ...bookingData,
-        tableId: 1
+        tableId: 1,
+        table: { name: 'Mesa 1', zone: { name: 'Sala' } },
+        customer: bookingData.customer
       });
 
       const response = await request(app)

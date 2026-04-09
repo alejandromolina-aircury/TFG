@@ -1,22 +1,9 @@
-// backend/src/services/tableAssignmentService.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import prisma from '../config/database';
-import { assignOptimalTable, reassignBooking } from './tableAssignmentService';
-
-vi.mock('../config/database', () => {
-  const mock = {
-    table: { findMany: vi.fn(), findUnique: vi.fn() },
-    booking: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
-  };
-  return {
-    ...mock,
-    __esModule: true,
-    default: mock,
-  };
-});
+import prisma from '../../config/database';
+import { assignOptimalTable, reassignBooking } from '../../services/tableAssignmentService';
 
 describe('tableAssignmentService', () => {
-  const p = prisma.default || prisma;
+  const p = prisma;
 
   beforeEach(() => {
     vi.clearAllMocks();
