@@ -1,4 +1,3 @@
-// backend/src/routes/public/reviews.js
 
 const express = require('express');
 const router = express.Router();

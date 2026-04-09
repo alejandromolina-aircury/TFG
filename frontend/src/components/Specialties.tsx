@@ -32,7 +32,7 @@ const Specialties: React.FC = () => {
         <h2>Nuestras Especialidades</h2>
       </div>
       <div className="specialties-grid">
-        {specialties.map((item, index) => (
+        {specialties.map((item) => (
           // Las 3 cards deben revelarse al mismo tiempo.
           <div key={item.id} className="specialty-card reveal">
             <div className="card-image">

@@ -1,4 +1,3 @@
-// frontend/src/components/reservation/Step3Success.tsx
 
 import type { ReservationConfirmation } from '../../types';
 

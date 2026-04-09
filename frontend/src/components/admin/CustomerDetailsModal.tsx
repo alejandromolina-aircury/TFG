@@ -1,4 +1,3 @@
-// frontend/src/components/admin/CustomerDetailsModal.tsx
 
 import { useState, useEffect } from 'react';
 import {

@@ -1,7 +1,4 @@
 
-
-// backend/src/middleware/authMiddleware.js
-
 const jwt = require('jsonwebtoken');
 const { BusinessError } = require('./errorHandler');
 const { asyncHandler } = require('./errorHandler');
