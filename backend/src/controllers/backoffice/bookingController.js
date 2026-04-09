@@ -19,12 +19,11 @@ exports.getAllBookings = asyncHandler(async (req, res) => {
   
   const whereClause = {};
   
-  // Filtro por fecha
+  // Filtro por fecha (usando la hora local del sistema/restaurante)
   if (date) {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+    // Forzamos que se interprete como el inicio y fin del día en la zona horaria local
+    const startOfDay = new Date(`${date}T00:00:00.000`);
+    const endOfDay = new Date(`${date}T23:59:59.999`);
     
     whereClause.date = {
       gte: startOfDay,
