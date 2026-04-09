@@ -103,11 +103,13 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
                   Nuestra Historia
                 </NavLink>
               </li>
-              <li style={{ marginTop: '2rem' }}>
-                <Link to="/reservar" className="btn btn-primary" onClick={closeMobileMenu} style={{ width: '100%' }}>
-                  Reservar una Mesa
-                </Link>
-              </li>
+              {!isReservation && (
+                <li style={{ marginTop: '2rem' }}>
+                  <Link to="/reservar" className="btn btn-primary" onClick={closeMobileMenu} style={{ width: '100%' }}>
+                    Reservar una Mesa
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         </div>
