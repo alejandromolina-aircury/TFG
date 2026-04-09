@@ -118,6 +118,7 @@ export interface ReservationPayload {
     lastName: string;
     email: string;
     phone: string;
+    allergens?: string[];
   };
 }
 
