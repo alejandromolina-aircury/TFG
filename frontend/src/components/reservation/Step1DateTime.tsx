@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getAvailableTimes, getPublicConfig } from '../../services/api';
 import type { TimeSlot } from '../../types';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function Step1DateTime({ onNext }: Props) {
+  const { t } = useTranslation();
   const today = new Date().toISOString().split('T')[0];
 
   const [date, setDate] = useState('');
@@ -34,30 +36,30 @@ export default function Step1DateTime({ onNext }: Props) {
       .then((data) => {
         const available = data.filter((s: TimeSlot) => s.available);
         if (available.length === 0) {
-          setSlotsError('No hay horarios disponibles para este día y número de comensales. Prueba con otra fecha.');
+          setSlotsError(t('reservation.errorNoSlots'));
         }
         setSlots(data);
       })
-      .catch(() => setSlotsError('Error al cargar horarios. Inténtalo de nuevo.'))
+      .catch(() => setSlotsError(t('reservation.errorLoadSlots')))
       .finally(() => setLoadingSlots(false));
-  }, [date, pax]);
+  }, [date, pax, t]);
 
   const handleSubmit = () => {
-    if (!date) { setError('Por favor selecciona una fecha.'); return; }
-    if (!selectedTime) { setError('Por favor selecciona un horario.'); return; }
+    if (!date) { setError(t('reservation.errorNoDate')); return; }
+    if (!selectedTime) { setError(t('reservation.errorNoTime')); return; }
     setError('');
     onNext({ date, time: selectedTime, pax });
   };
 
   return (
     <div>
-      <h2 className="form-title">Haz tu Reserva</h2>
-      <p className="form-subtitle">Selecciona fecha, comensales y horario disponible.</p>
+      <h2 className="form-title">{t('reservation.step1Title')}</h2>
+      <p className="form-subtitle">{t('reservation.step1Subtitle')}</p>
 
       <div className="form-grid">
         <div className="form-grid form-grid-2">
           <div className="form-group">
-            <label htmlFor="res-date">Fecha</label>
+            <label htmlFor="res-date">{t('reservation.dateLabel')}</label>
             <input
               id="res-date"
               type="date"
@@ -68,14 +70,14 @@ export default function Step1DateTime({ onNext }: Props) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="res-pax">Comensales</label>
+            <label htmlFor="res-pax">{t('reservation.paxLabel')}</label>
             <select
               id="res-pax"
               value={pax}
               onChange={(e) => setPax(Number(e.target.value))}
             >
               {Array.from({ length: maxPax }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>
+                <option key={n} value={n}>{n} {n === 1 ? t('reservation.person') : t('reservation.persons')}</option>
               ))}
             </select>
           </div>
@@ -84,10 +86,10 @@ export default function Step1DateTime({ onNext }: Props) {
         {/* Time slots */}
         {date && (
           <div>
-            <span className="time-slots-label">Hora</span>
+            <span className="time-slots-label">{t('reservation.timeLabel')}</span>
             {loadingSlots && (
               <div className="time-slots-loading">
-                <span>⏳</span> Cargando horarios...
+                <span>⏳</span> {t('reservation.loadingSlots')}
               </div>
             )}
             {!loadingSlots && slotsError && (
@@ -121,7 +123,7 @@ export default function Step1DateTime({ onNext }: Props) {
           disabled={!date || !selectedTime}
           style={{ marginTop: '0.5rem' }}
         >
-          Siguiente →
+          {t('reservation.nextBtn')}
         </button>
       </div>
     </div>
