@@ -22,7 +22,9 @@ const mockPrisma = {
   customer: {
     findMany: vi.fn(),
     findUnique: vi.fn(),
+    findFirst: vi.fn(),
     create: vi.fn(),
+    update: vi.fn(),
   },
   table: {
     findMany: vi.fn(),
