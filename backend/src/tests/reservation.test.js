@@ -1,0 +1,58 @@
+// backend/src/tests/reservation.test.js
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import request from 'supertest';
+import app from '../index';
+const prisma = require('../config/database');
+
+describe('Reservation Integration Tests', () => {
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    prisma.systemConfig.findUnique.mockResolvedValue({ key: 'opening_days', value: '0,1,2,3,4,5,6' });
+    prisma.table.findFirst.mockResolvedValue({ maxCapacity: 10 });
+    prisma.zone.count.mockResolvedValue(1);
+    prisma.table.count.mockResolvedValue(10);
+  });
+
+  describe('POST /api/public/reservations', () => {
+    it('debería crear una reserva con éxito', async () => {
+      const bookingData = {
+        date: '2026-05-01',
+        time: '14:00',
+        pax: 2,
+        customer: {
+          firstName: 'Juan',
+          lastName: 'Pérez',
+          email: 'juan@example.com',
+          phone: '600123456'
+        }
+      };
+
+      prisma.table.findMany.mockResolvedValue([
+        { id: 1, name: 'Mesa 1', minCapacity: 2, maxCapacity: 4, isActive: true, zone: { name: 'Sala' } }
+      ]);
+      prisma.booking.findMany.mockResolvedValue([]);
+      prisma.booking.create.mockResolvedValue({
+        id: 'new-id',
+        confirmationCode: 'ABC-123',
+        ...bookingData,
+        tableId: 1
+      });
+
+      const response = await request(app)
+        .post('/api/public/reservations')
+        .send(bookingData);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.booking.pax).toBe(2);
+    });
+  });
+
+  describe('GET /api/public/reservations/:code', () => {
+    it('debería retornar 404 si la reserva no existe', async () => {
+      prisma.booking.findUnique.mockResolvedValue(null);
+      const response = await request(app).get('/api/public/reservations/NOTFOUND');
+      expect(response.status).toBe(404);
+    });
+  });
+});
