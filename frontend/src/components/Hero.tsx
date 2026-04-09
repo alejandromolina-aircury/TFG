@@ -1,22 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useReveal } from '../services/useReveal';
 
 const Hero: React.FC = () => {
+  const { t } = useTranslation();
   const revealRef = useReveal();
 
   return (
     <section className="hero" id="home" ref={revealRef}>
       <div className="hero-overlay"></div>
       <div className="hero-content">
-        <h1 className="reveal">Sabor a Mar, Tradición en la Mesa</h1>
+        <h1 className="reveal">{t('hero.title')}</h1>
         <p className="hero-subtitle reveal">
-          Disfruta de la mejor cocina mediterránea con un ambiente acogedor. 
-          Pescados frescos, mariscos seleccionados y arroces tradicionales.
+          {t('hero.subtitle')}
         </p>
         <div className="hero-ctas reveal">
-          <Link to="/reservar" className="btn btn-primary">Reservar Ahora</Link>
-          <Link to="/carta" className="btn btn-outline" style={{ color: 'white', borderColor: 'white' }}>Ver Carta</Link>
+          <Link to="/reservar" className="btn btn-primary">{t('hero.bookNow')}</Link>
+          <Link to="/carta" className="btn btn-outline" style={{ color: 'white', borderColor: 'white' }}>{t('hero.viewMenu')}</Link>
         </div>
       </div>
     </section>
