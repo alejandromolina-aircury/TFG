@@ -23,6 +23,9 @@ export interface Customer {
   tags: string[];
   preferences?: string;
   birthday?: string;
+  previousEmails?: string[];
+  previousPhones?: string[];
+  previousNames?: string[];
   language: 'ES' | 'EN' | 'FR';
   totalVisits: number;
   totalNoShows: number;

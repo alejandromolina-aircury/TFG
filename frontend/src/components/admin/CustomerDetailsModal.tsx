@@ -245,6 +245,87 @@ export default function CustomerDetailsModal({
                 />
               </div>
             </div>
+            
+            {((editingCustomer.previousEmails?.length || 0) > 1 || 
+               (editingCustomer.previousPhones?.length || 0) > 1 || 
+               (editingCustomer.previousNames?.length || 0) > 1) && (
+              <div className="modal-section-accent" style={{ 
+                marginTop: '1.5rem', 
+                padding: '1rem', 
+                borderRadius: '12px', 
+                background: 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.02) 100%)',
+                border: '1px solid rgba(var(--primary-rgb), 0.1)'
+              }}>
+                <h4 style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--primary-color)' }}>
+                  🕒 Historial de Identidad
+                </h4>
+                
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  {(editingCustomer.previousEmails?.length || 0) > 1 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Otros emails
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        {editingCustomer.previousEmails?.filter(e => e !== editingCustomer.email).map(e => (
+                          <span key={e} className="customer-badge" style={{ 
+                            background: 'white', 
+                            color: 'var(--text-main)',
+                            border: '1px solid var(--border-color)',
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '20px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                          }}>{e}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(editingCustomer.previousPhones?.length || 0) > 1 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Otros teléfonos
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        {editingCustomer.previousPhones?.filter(p => p !== editingCustomer.phone).map(p => (
+                          <span key={p} className="customer-badge" style={{ 
+                            background: 'white', 
+                            color: 'var(--text-main)',
+                            border: '1px solid var(--border-color)',
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '20px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                          }}>{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(editingCustomer.previousNames?.length || 0) > 1 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Otros nombres
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        {editingCustomer.previousNames?.filter(n => n !== `${editingCustomer.firstName} ${editingCustomer.lastName}`.trim()).map(n => (
+                          <span key={n} className="customer-badge" style={{ 
+                            background: 'white', 
+                            color: 'var(--text-main)',
+                            border: '1px solid var(--border-color)',
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '20px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                          }}>{n}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Estadísticas */}
