@@ -51,6 +51,7 @@ export default function ReservasPage() {
     email: '',
     phone: '',
     specialRequests: '',
+    allergens: '',
   });
   const [incomingReservation, setIncomingReservation] = useState<NewReservationEventPayload | null>(null);
   const { socket } = useSocket();
@@ -117,12 +118,13 @@ export default function ReservasPage() {
           lastName: newBooking.lastName,
           email: newBooking.email,
           phone: newBooking.phone,
+          allergens: newBooking.allergens.split(',').map(a => a.trim()).filter(a => a),
         },
         specialRequests: newBooking.specialRequests,
         source: 'BACKOFFICE'
       });
       setIsModalOpen(false);
-      setNewBooking({ date: '', time: '', pax: 2, firstName: '', lastName: '', email: '', phone: '', specialRequests: '' });
+      setNewBooking({ date: '', time: '', pax: 2, firstName: '', lastName: '', email: '', phone: '', specialRequests: '', allergens: '' });
       fetchBookings();
     } catch {
       alert('Error al crear la reserva. Verifica los datos o disponibilidad.');
@@ -217,7 +219,7 @@ export default function ReservasPage() {
                   <th>Comensales</th>
                   <th>Mesa</th>
                   <th>Origen</th>
-                  <th>Peticiones</th>
+                  <th>Peticiones / Alergias</th>
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -379,7 +381,12 @@ export default function ReservasPage() {
                 </div>
 
                 <div className="admin-modal__form-group">
-                  <label>Observaciones</label>
+                  <label>Alergias / Intolerancias</label>
+                  <input type="text" placeholder="Ej: Gluten, Lactosa" value={newBooking.allergens} onChange={e => setNewBooking({ ...newBooking, allergens: e.target.value })} />
+                </div>
+
+                <div className="admin-modal__form-group">
+                  <label>Observaciones / Peticiones</label>
                   <textarea rows={2} value={newBooking.specialRequests} onChange={e => setNewBooking({ ...newBooking, specialRequests: e.target.value })}></textarea>
                 </div>
               </div>
