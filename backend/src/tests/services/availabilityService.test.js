@@ -1,7 +1,6 @@
-// backend/src/services/availabilityService.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-const prisma = require('../config/database');
-import { getAvailableDaysInMonth, checkAvailability } from './availabilityService';
+const prisma = require('../../config/database');
+import { getAvailableDaysInMonth, checkAvailability } from '../../services/availabilityService';
 
 describe('availabilityService', () => {
   beforeEach(() => {
@@ -11,7 +10,7 @@ describe('availabilityService', () => {
   describe('getAvailableDaysInMonth', () => {
     it('debería retornar días disponibles si hay turnos y mesas', async () => {
       prisma.shift.findMany.mockResolvedValue([
-        { id: 1, name: 'Comida', daysOfWeek: [0, 1, 2, 3, 4, 5, 6], isActive: true }
+        { id: 1, name: 'Comida', startTime: '13:00', endTime: '16:00', daysOfWeek: [0, 1, 2, 3, 4, 5, 6], isActive: true }
       ]);
       prisma.closure.findMany.mockResolvedValue([]);
       prisma.systemConfig.findUnique.mockResolvedValue({ key: 'opening_days', value: '0,1,2,3,4,5,6' });
