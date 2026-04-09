@@ -70,13 +70,14 @@ function getDayOfWeek(date) {
  */
 function isDateInBookableRange(date) {
   const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const targetDate = new Date(date);
   
-  // No puede ser en el pasado
-  if (targetDate < now) return false;
+  // No puede ser en el pasado (permitimos hoy)
+  if (targetDate < today) return false;
   
   // No puede ser más allá del máximo permitido
-  const maxDate = addDays(now, AVAILABILITY.MAX_DAYS_AHEAD);
+  const maxDate = addDays(today, AVAILABILITY.MAX_DAYS_AHEAD);
   if (targetDate > maxDate) return false;
   
   return true;
