@@ -1,4 +1,3 @@
-// backend/prisma/seed.ts
 import 'dotenv/config'
 import { PrismaClient, BookingStatus, Language } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'

@@ -1,4 +1,3 @@
-// backend/src/routes/backoffice/zones.js
 
 const express = require('express');
 const router = express.Router();

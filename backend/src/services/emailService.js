@@ -1,4 +1,3 @@
-// backend/src/services/emailService.js
 
 const nodemailer = require('nodemailer');
 

@@ -1,4 +1,3 @@
-// backend/src/config/constants.js
 
 // Reglas de negocio del Mesón Marinero
 // Horario: Martes-Sábado, 13:30-17:00 (solo comidas)

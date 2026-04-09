@@ -1,4 +1,3 @@
-// backend/src/middleware/errorHandler.js
 
 /**
  * Middleware de manejo de errores global

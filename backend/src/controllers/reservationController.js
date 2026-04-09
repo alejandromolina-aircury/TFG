@@ -1,4 +1,3 @@
-// backend/src/controllers/public/reservationController.js
 
 const crypto = require('crypto');
 const prisma = require('../config/database');
