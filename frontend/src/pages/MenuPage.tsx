@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getPublicMenu } from '../services/api';
 import type { MenuCategory } from '../types';
 
 const MenuPage: React.FC = () => {
+  const { t } = useTranslation();
   const [sections, setSections] = useState<MenuCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,20 +39,20 @@ const MenuPage: React.FC = () => {
           zIndex: 1
         }} />
         <div style={{ position: 'relative', zIndex: 2, padding: '0 1.5rem' }}>
-          <h1 style={{ fontSize: 'var(--hero-h1-size, 3.5rem)', marginBottom: '1.5rem', fontWeight: 900, color: 'white' }}>Nuestra Carta</h1>
-          <p style={{ fontSize: '1.25rem', opacity: 0.9, maxWidth: '700px', margin: '0 auto' }}>Los mejores sabores del Mediterráneo, seleccionados para ti.</p>
+          <h1 style={{ fontSize: 'var(--hero-h1-size, 3.5rem)', marginBottom: '1.5rem', fontWeight: 900, color: 'white' }}>{t('menu.title')}</h1>
+          <p style={{ fontSize: '1.25rem', opacity: 0.9, maxWidth: '700px', margin: '0 auto' }}>{t('menu.subtitle')}</p>
         </div>
       </header>
       <main className="container" style={{ padding: '4rem 1.5rem', maxWidth: '800px', margin: '0 auto' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '5rem 0' }}>
             <div className="spinner" style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-            <p style={{ color: 'var(--text-muted)' }}>Cargando nuestra carta...</p>
+            <p style={{ color: 'var(--text-muted)' }}>{t('menu.loading')}</p>
           </div>
         ) : sections.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem 0', backgroundColor: 'var(--bg-light)', borderRadius: 'var(--radius)', border: '1px dashed var(--border)' }}>
-            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>La carta no está disponible en este momento.</p>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Por favor, vuelve a consultarla más tarde o pregunta a nuestro personal.</p>
+            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>{t('menu.emptyTitle')}</p>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t('menu.emptyDesc')}</p>
           </div>
         ) : (
           sections.map((section, idx) => (
@@ -107,9 +109,9 @@ const MenuPage: React.FC = () => {
         )}
 
         <footer style={{ marginTop: '5rem', textAlign: 'center', backgroundColor: 'var(--bg-light)', padding: '3rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
-          <h3 style={{ marginBottom: '1.5rem', color: 'var(--primary)', fontFamily: "'Playfair Display', serif" }}>Agradecimientos</h3>
+          <h3 style={{ marginBottom: '1.5rem', color: 'var(--primary)', fontFamily: "'Playfair Display', serif" }}>{t('menu.thanksTitle')}</h3>
           <p style={{ fontStyle: 'italic', color: 'var(--text-dark)', lineHeight: '1.8' }}>
-            "A nuestros padres, Eduardo y Alicia, que desde 1988 forjaron este sueño, que hasta hoy sus hijos intentamos mantener vivo día a día. Siéntate a la mesa, siéntete en tu casa, descorchemos un buen vino, y disfruta de nuestro precioso legado."
+            {t('menu.thanksText')}
           </p>
         </footer>
       </main>
