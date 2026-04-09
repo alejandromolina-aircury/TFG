@@ -218,6 +218,7 @@ export default function ReservasPage() {
                   <th>Comensales</th>
                   <th>Mesa</th>
                   <th>Origen</th>
+                  <th>Peticiones</th>
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -261,9 +262,6 @@ export default function ReservasPage() {
                             {b.customer.isBlacklisted && (
                               <span className="customer-badge customer-badge--blacklist" title="Blacklist" style={{ padding: '0.1rem 0.35rem' }}>🚫</span>
                             )}
-                            {b.customer.allergens && b.customer.allergens.length > 0 && (
-                              <span className="customer-badge customer-badge--allergy" title={`Alergias: ${b.customer.allergens.join(', ')}`} style={{ padding: '0.1rem 0.35rem' }}>🚨</span>
-                            )}
                             {b.customer.tags?.filter(t => t !== 'VIP' && t !== 'BLACKLIST').map(tag => (
                               <span 
                                 key={tag} 
@@ -283,6 +281,25 @@ export default function ReservasPage() {
                         <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           {b.source === 'WEB' ? '🌐 Web' : b.source === 'PHONE' ? '📞 Tel.' : b.source === 'WALK_IN' ? '🚶 Presencial' : '🖥️ Backoffice'}
                         </span>
+                      </td>
+                      <td>
+                        <div className="booking-requests-cell">
+                          {b.customer.allergens && b.customer.allergens.length > 0 && (
+                            <div className="request-item request-item--allergy" title={b.customer.allergens.join(', ')}>
+                              <span className="request-icon">🚨</span>
+                              <span className="request-text">{b.customer.allergens.join(', ')}</span>
+                            </div>
+                          )}
+                          {b.specialRequests && (
+                            <div className="request-item" title={b.specialRequests}>
+                              <span className="request-icon">💬</span>
+                              <span className="request-text">{b.specialRequests}</span>
+                            </div>
+                          )}
+                          {!b.specialRequests && (!b.customer.allergens || b.customer.allergens.length === 0) && (
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>—</span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <select
