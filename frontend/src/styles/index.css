@@ -428,6 +428,12 @@ img {
   width: 100%;
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .navbar-right .btn-navbar-res {
   background-color: var(--accent-action) !important;
   color: var(--white) !important;
