@@ -1,7 +1,26 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import Navbar from '../../components/Navbar';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const keys: Record<string, string> = {
+        'navbar.home': 'Inicio',
+        'navbar.menu': 'Carta',
+        'navbar.history': 'Nuestra Historia',
+        'navbar.bookTable': 'Reservar una Mesa',
+        'navbar.reservations': 'Reservas',
+      };
+      return keys[key] || key;
+    },
+    i18n: {
+      changeLanguage: () => new Promise(() => {}),
+      language: 'es',
+    },
+  }),
+}));
 
 describe('Navbar Component', () => {
   it('renders correctly with default props', () => {
