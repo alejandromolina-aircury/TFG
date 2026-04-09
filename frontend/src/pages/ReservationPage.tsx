@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navbar from '../components/Navbar';
-import './ReservationPage.css';
+import '../styles/pages/ReservationPage.css';
 import Step1DateTime from '../components/reservation/Step1DateTime';
 import Step2User from '../components/reservation/Step2User';
 import Step3Success from '../components/reservation/Step3Success';
