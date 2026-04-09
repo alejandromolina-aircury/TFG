@@ -1,8 +1,7 @@
-// frontend/src/components/Navbar.test.tsx
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
-import Navbar from './Navbar';
+import Navbar from '../../components/Navbar';
 
 describe('Navbar Component', () => {
   it('renders correctly with default props', () => {
