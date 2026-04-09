@@ -1,11 +1,10 @@
-// frontend/src/components/reservation/Step1DateTime.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Step1DateTime from './Step1DateTime';
-import * as api from '../../services/api';
+import Step1DateTime from '../../../components/reservation/Step1DateTime';
+import * as api from '../../../services/api';
 
 // Mock de los servicios de API
-vi.mock('../../services/api', () => ({
+vi.mock('../../../services/api', () => ({
   getAvailableTimes: vi.fn(),
   getPublicConfig: vi.fn(),
 }));

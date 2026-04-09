@@ -1,11 +1,10 @@
-// frontend/src/components/Specialties.test.tsx
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
-import Specialties from './Specialties';
+import Specialties from '../../components/Specialties';
 
 // Mock de useReveal hook
-vi.mock('../services/useReveal', () => ({
+vi.mock('../../services/useReveal', () => ({
   useReveal: () => ({ current: null })
 }));
 
