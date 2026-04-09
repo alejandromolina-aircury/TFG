@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import '../styles/pages/ReservationPage.css';
 import Step1DateTime from '../components/reservation/Step1DateTime';
@@ -9,6 +10,7 @@ import type { ReservationConfirmation } from '../types';
 type Step = 1 | 2 | 3;
 
 export default function ReservationPage() {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>(1);
   const [bookingData, setBookingData] = useState<{ date: string; time: string; pax: number } | null>(null);
   const [confirmation, setConfirmation] = useState<ReservationConfirmation | null>(null);
@@ -44,12 +46,12 @@ export default function ReservationPage() {
             </div>
             <div>
               <div className="image-panel__quote">
-                "El mar en tu mesa, la tradición en cada bocado."
+                {t('reservation.pageQuote')}
               </div>
               <div className="image-panel__info">
-                <span>📍 Calle del Puerto, 12 — Alicante</span>
-                <span>🕐 Comidas: 13:30 – 16:00 · Cenas: 20:30 – 23:00</span>
-                <span>📅 Martes a Domingo</span>
+                <span>{t('reservation.pageAddress')}</span>
+                <span>{t('reservation.pageHours')}</span>
+                <span>{t('reservation.pageDays')}</span>
               </div>
             </div>
           </div>
@@ -87,7 +89,7 @@ export default function ReservationPage() {
 
       {/* Footer */}
       <footer className="res-footer">
-        © 2026 Mesón Marinero · Alicante · Todos los derechos reservados
+        {t('reservation.footer')}
       </footer>
     </div>
   );

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   showLinks?: boolean;
@@ -7,6 +9,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false }) => {
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState<boolean>(isReservation);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -24,11 +27,14 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
   return (
     <header className={`sticky-navbar ${scrolled ? 'scrolled' : ''} ${mobileMenuOpen ? 'mobile-menu-active' : ''}`}>
       <div className="navbar-container">
-        <div className="navbar-left">
+        <div className="navbar-left" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <Link to="/" className="logo-container" onClick={closeMobileMenu}>
             <span className="logo-text">⚓ Mesón Marinero</span>
             <span className="logo-subtext">Alicante, Mediterráneo</span>
           </Link>
+          <div className="desktop-only">
+            <LanguageSwitcher />
+          </div>
         </div>
         
         {showLinks && (
@@ -37,17 +43,17 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
               <ul className="nav-links">
                 <li>
                   <NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>
-                    Inicio
+                    {t('navbar.home')}
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/carta" className={({ isActive }) => isActive ? 'active' : ''}>
-                    Carta
+                    {t('navbar.menu')}
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/historia" className={({ isActive }) => isActive ? 'active' : ''}>
-                    Nuestra Historia
+                    {t('navbar.history')}
                   </NavLink>
                 </li>
               </ul>
@@ -73,11 +79,11 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
         <div className="navbar-right">
           {isReservation ? (
             <div className="phone-info">
-              Reservas · <a href="tel:965000000">965 00 00 00</a>
+              {t('navbar.reservations')} · <a href="tel:965000000">965 00 00 00</a>
             </div>
           ) : (
             <>
-              <Link to="/reservar" className="btn btn-primary btn-navbar-res desktop-only">Reservar una Mesa</Link>
+              <Link to="/reservar" className="btn btn-primary btn-navbar-res desktop-only">{t('navbar.bookTable')}</Link>
             </>
           )}
         </div>
@@ -90,23 +96,28 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
             <ul className="mobile-nav-links">
               <li>
                 <NavLink to="/" end onClick={closeMobileMenu} className={({ isActive }) => isActive ? 'active' : ''}>
-                  Inicio
+                  {t('navbar.home')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/carta" onClick={closeMobileMenu} className={({ isActive }) => isActive ? 'active' : ''}>
-                  Carta
+                  {t('navbar.menu')}
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/historia" onClick={closeMobileMenu} className={({ isActive }) => isActive ? 'active' : ''}>
-                  Nuestra Historia
+                  {t('navbar.history')}
                 </NavLink>
               </li>
+              <li>
+                <div className="mobile-language-switcher" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                   <LanguageSwitcher />
+                </div>
+              </li>
               {!isReservation && (
-                <li style={{ marginTop: '2rem' }}>
+                <li style={{ marginTop: '0.5rem' }}>
                   <Link to="/reservar" className="btn btn-primary" onClick={closeMobileMenu} style={{ width: '100%' }}>
-                    Reservar una Mesa
+                    {t('navbar.bookTable')}
                   </Link>
                 </li>
               )}
