@@ -30,7 +30,7 @@ describe('Reservation Integration Tests', () => {
       prisma.table.findMany.mockResolvedValue([
         { id: 1, name: 'Mesa 1', minCapacity: 2, maxCapacity: 4, isActive: true, zone: { name: 'Sala' } }
       ]);
-      prisma.customer.findUnique.mockResolvedValue(null);
+      prisma.customer.findFirst.mockResolvedValue(null);
       prisma.customer.create.mockResolvedValue({
         id: 1,
         ...bookingData.customer,
