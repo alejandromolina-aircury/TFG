@@ -8,16 +8,24 @@ const { BLACKLIST } = require('../config/constants');
  * Lógica principal para reservas: busca por email, si no existe lo crea
  */
 async function findOrCreateCustomer(email, customerData) {
-  const { firstName, lastName, phone, allergens, specialRequests } = customerData;
+  const { firstName, lastName, phone, allergens } = customerData;
+  const normalizedEmail = email.toLowerCase().trim();
   
   // Validar email
   if (!email || !isValidEmail(email)) {
     throw new ValidationError('Email inválido');
   }
   
-  // Buscar cliente existente
-  let customer = await prisma.customer.findUnique({
-    where: { email: email.toLowerCase().trim() },
+  // Buscar cliente existente por cualquiera de sus campos actuales o previos
+  let customer = await prisma.customer.findFirst({
+    where: {
+      OR: [
+        { email: normalizedEmail },
+        { previousEmails: { has: normalizedEmail } },
+        { phone: phone },
+        { previousPhones: { has: phone } }
+      ]
+    },
     include: {
       bookings: {
         orderBy: { date: 'desc' },
@@ -27,25 +35,43 @@ async function findOrCreateCustomer(email, customerData) {
   });
   
   if (customer) {
-    // Cliente existente: Actualizar datos si es necesario
+    // Cliente existente: Actualizar datos y guardar en historial
     const updateData = {
       totalVisits: { increment: 1 }
     };
     
-    // Actualizar datos si se proporcionan nuevos
-    if (firstName && firstName !== customer.firstName) {
-      updateData.firstName = firstName;
-    }
-    if (lastName && lastName !== customer.lastName) {
-      updateData.lastName = lastName;
-    }
-    if (phone && phone !== customer.phone) {
-      updateData.phone = phone;
+    // Gestionar historial de nombres
+    const currentFullName = `${firstName} ${lastName}`.trim();
+    if (currentFullName && !customer.previousNames.includes(currentFullName)) {
+      updateData.previousNames = [...customer.previousNames, currentFullName];
     }
     
-    // Actualizar alergias si se proporcionan nuevas
+    // Gestionar historial de emails
+    if (normalizedEmail !== customer.email) {
+      if (!customer.previousEmails.includes(customer.email)) {
+        updateData.previousEmails = [...customer.previousEmails, customer.email];
+      }
+      updateData.email = normalizedEmail;
+    } else if (!customer.previousEmails.includes(normalizedEmail)) {
+      updateData.previousEmails = [...customer.previousEmails, normalizedEmail];
+    }
+    
+    // Gestionar historial de teléfonos
+    if (phone && phone !== customer.phone) {
+      if (!customer.previousPhones.includes(customer.phone)) {
+        updateData.previousPhones = [...customer.previousPhones, customer.phone];
+      }
+      updateData.phone = phone;
+    } else if (phone && !customer.previousPhones.includes(phone)) {
+      updateData.previousPhones = [...customer.previousPhones, phone];
+    }
+    
+    // Actualizar campos principales con la información más reciente
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    
+    // Actualizar alergias
     if (allergens && allergens.length > 0) {
-      // Combinar con alergias existentes sin duplicar
       const existingAllergens = customer.allergens || [];
       const combinedAllergens = [...new Set([...existingAllergens, ...allergens])];
       updateData.allergens = combinedAllergens;
@@ -65,19 +91,22 @@ async function findOrCreateCustomer(email, customerData) {
     return {
       customer,
       isNew: false,
-      message: `Bienvenido de nuevo, ${customer.firstName}! Esta es tu visita número ${customer.totalVisits}`
+      message: `¡Hola de nuevo, ${customer.firstName}!`
     };
   }
   
-  // Cliente nuevo: Crear
+  // Cliente nuevo: Crear con historial inicial
   customer = await prisma.customer.create({
     data: {
-      email: email.toLowerCase().trim(),
+      email: normalizedEmail,
       firstName: firstName || 'Cliente',
       lastName: lastName || '',
       phone: phone || '',
       allergens: allergens || [],
-      totalVisits: 1
+      totalVisits: 1,
+      previousEmails: [normalizedEmail],
+      previousPhones: phone ? [phone] : [],
+      previousNames: [`${firstName} ${lastName}`.trim()]
     }
   });
   
@@ -328,7 +357,10 @@ async function searchCustomers(searchTerm, filters = {}) {
       { firstName: { contains: searchTerm, mode: 'insensitive' } },
       { lastName: { contains: searchTerm, mode: 'insensitive' } },
       { email: { contains: searchTerm, mode: 'insensitive' } },
-      { phone: { contains: searchTerm } }
+      { phone: { contains: searchTerm } },
+      { previousEmails: { has: searchTerm } },
+      { previousPhones: { has: searchTerm } },
+      { previousNames: { hasSome: [searchTerm] } }
     ];
   }
   
