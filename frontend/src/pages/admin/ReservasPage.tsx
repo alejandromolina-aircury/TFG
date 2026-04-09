@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getBookings, updateBookingStatus, createBackofficeBooking } from '../../services/api';
-import type { Booking, BookingStatus } from '../../types';
+import { useSocket } from '../../context/useSocket';
+import type { Booking, BookingStatus, NewReservationEventPayload } from '../../types';
 import CustomerDetailsModal from '../../components/admin/CustomerDetailsModal';
 import './AdminPages.css';
 
@@ -52,6 +53,8 @@ export default function ReservasPage() {
     phone: '',
     specialRequests: '',
   });
+  const [incomingReservation, setIncomingReservation] = useState<NewReservationEventPayload | null>(null);
+  const { socket } = useSocket();
 
   const fetchBookings = useCallback(() => {
     setLoading(true);
@@ -73,6 +76,20 @@ export default function ReservasPage() {
   }, [filterDate, filterStatus]);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleNewReservation = (payload: NewReservationEventPayload) => {
+      setIncomingReservation(payload);
+      fetchBookings();
+    };
+
+    socket.on('new_reservation', handleNewReservation);
+    return () => {
+      socket.off('new_reservation', handleNewReservation);
+    };
+  }, [socket, fetchBookings]);
 
   const handleStatusChange = async (id: string, newStatus: BookingStatus) => {
     setUpdatingId(id);
@@ -108,7 +125,7 @@ export default function ReservasPage() {
       setIsModalOpen(false);
       setNewBooking({ date: '', time: '', pax: 2, firstName: '', lastName: '', email: '', phone: '', specialRequests: '' });
       fetchBookings();
-    } catch (err) {
+    } catch {
       alert('Error al crear la reserva. Verifica los datos o disponibilidad.');
     } finally {
       setIsSubmitting(false);
@@ -126,6 +143,23 @@ export default function ReservasPage() {
           + Añadir Reserva
         </button>
       </div>
+
+      {incomingReservation && (
+        <div className="section-card section-card--alert" style={{ marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+            <div>
+              <strong>Nueva reserva recibida:</strong> {incomingReservation.customerName} • {incomingReservation.pax} pax • mesa {incomingReservation.tableName ?? 'por asignar'}
+            </div>
+            <button
+              className="btn btn-ghost"
+              onClick={() => setIncomingReservation(null)}
+              style={{ fontSize: '0.85rem', padding: '0.4rem 0.75rem' }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="section-card">
         <div className="section-card__header">
