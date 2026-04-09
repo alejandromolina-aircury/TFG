@@ -34,6 +34,7 @@ services:
       DATABASE_URL: postgres://postgres:root@db:5432/mesonMarinero
       PORT: 4000
       NODE_ENV: development
+      TZ: Europe/Madrid
     depends_on:
       db:
         condition: service_healthy
