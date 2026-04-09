@@ -222,7 +222,9 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Iniciar
-startServer();
+// Iniciar solo si se ejecuta directamente
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;
