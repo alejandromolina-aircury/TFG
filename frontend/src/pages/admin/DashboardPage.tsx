@@ -191,6 +191,7 @@ export default function DashboardPage() {
                   <th>Cliente</th>
                   <th>Comensales</th>
                   <th>Mesa</th>
+                  <th>Peticiones / Alergias</th>
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -206,6 +207,25 @@ export default function DashboardPage() {
                     </td>
                     <td>{b.pax} 👤</td>
                     <td>{b.table?.name ?? '—'}</td>
+                    <td>
+                      <div className="booking-requests-cell">
+                        {b.customer.allergens && b.customer.allergens.length > 0 && (
+                          <div className="request-item request-item--allergy" title={b.customer.allergens.join(', ')}>
+                            <span className="request-icon">🚨</span>
+                            <span className="request-text">{b.customer.allergens.join(', ')}</span>
+                          </div>
+                        )}
+                        {b.specialRequests && (
+                          <div className="request-item" title={b.specialRequests}>
+                            <span className="request-icon">💬</span>
+                            <span className="request-text">{b.specialRequests}</span>
+                          </div>
+                        )}
+                        {!b.specialRequests && (!b.customer.allergens || b.customer.allergens.length === 0) && (
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>—</span>
+                        )}
+                      </div>
+                    </td>
                     <td>
                       <span className={STATUS_BADGE_CLASS[b.status]}>
                         {STATUS_LABELS[b.status]}
