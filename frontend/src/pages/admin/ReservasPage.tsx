@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getBookings, updateBookingStatus, createBackofficeBooking } from '../../services/api';
-import type { Booking, BookingStatus } from '../../types';
+import { useSocket } from '../../context/useSocket';
+import type { Booking, BookingStatus, NewReservationEventPayload } from '../../types';
 import CustomerDetailsModal from '../../components/admin/CustomerDetailsModal';
 import './AdminPages.css';
 
@@ -52,6 +53,8 @@ export default function ReservasPage() {
     phone: '',
     specialRequests: '',
   });
+  const [incomingReservation, setIncomingReservation] = useState<NewReservationEventPayload | null>(null);
+  const { socket } = useSocket();
 
   const fetchBookings = useCallback(() => {
     setLoading(true);
@@ -73,6 +76,20 @@ export default function ReservasPage() {
   }, [filterDate, filterStatus]);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleNewReservation = (payload: NewReservationEventPayload) => {
+      setIncomingReservation(payload);
+      fetchBookings();
+    };
+
+    socket.on('new_reservation', handleNewReservation);
+    return () => {
+      socket.off('new_reservation', handleNewReservation);
+    };
+  }, [socket, fetchBookings]);
 
   const handleStatusChange = async (id: string, newStatus: BookingStatus) => {
     setUpdatingId(id);
@@ -108,7 +125,7 @@ export default function ReservasPage() {
       setIsModalOpen(false);
       setNewBooking({ date: '', time: '', pax: 2, firstName: '', lastName: '', email: '', phone: '', specialRequests: '' });
       fetchBookings();
-    } catch (err) {
+    } catch {
       alert('Error al crear la reserva. Verifica los datos o disponibilidad.');
     } finally {
       setIsSubmitting(false);
@@ -126,6 +143,23 @@ export default function ReservasPage() {
           + Añadir Reserva
         </button>
       </div>
+
+      {incomingReservation && (
+        <div className="section-card section-card--alert" style={{ marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+            <div>
+              <strong>Nueva reserva recibida:</strong> {incomingReservation.customerName} • {incomingReservation.pax} pax • mesa {incomingReservation.tableName ?? 'por asignar'}
+            </div>
+            <button
+              className="btn btn-ghost"
+              onClick={() => setIncomingReservation(null)}
+              style={{ fontSize: '0.85rem', padding: '0.4rem 0.75rem' }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="section-card">
         <div className="section-card__header">
@@ -184,6 +218,7 @@ export default function ReservasPage() {
                   <th>Comensales</th>
                   <th>Mesa</th>
                   <th>Origen</th>
+                  <th>Peticiones</th>
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -227,9 +262,6 @@ export default function ReservasPage() {
                             {b.customer.isBlacklisted && (
                               <span className="customer-badge customer-badge--blacklist" title="Blacklist" style={{ padding: '0.1rem 0.35rem' }}>🚫</span>
                             )}
-                            {b.customer.allergens && b.customer.allergens.length > 0 && (
-                              <span className="customer-badge customer-badge--allergy" title={`Alergias: ${b.customer.allergens.join(', ')}`} style={{ padding: '0.1rem 0.35rem' }}>🚨</span>
-                            )}
                             {b.customer.tags?.filter(t => t !== 'VIP' && t !== 'BLACKLIST').map(tag => (
                               <span 
                                 key={tag} 
@@ -249,6 +281,25 @@ export default function ReservasPage() {
                         <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           {b.source === 'WEB' ? '🌐 Web' : b.source === 'PHONE' ? '📞 Tel.' : b.source === 'WALK_IN' ? '🚶 Presencial' : '🖥️ Backoffice'}
                         </span>
+                      </td>
+                      <td>
+                        <div className="booking-requests-cell">
+                          {b.customer.allergens && b.customer.allergens.length > 0 && (
+                            <div className="request-item request-item--allergy" title={b.customer.allergens.join(', ')}>
+                              <span className="request-icon">🚨</span>
+                              <span className="request-text">{b.customer.allergens.join(', ')}</span>
+                            </div>
+                          )}
+                          {b.specialRequests && (
+                            <div className="request-item" title={b.specialRequests}>
+                              <span className="request-icon">💬</span>
+                              <span className="request-text">{b.specialRequests}</span>
+                            </div>
+                          )}
+                          {!b.specialRequests && (!b.customer.allergens || b.customer.allergens.length === 0) && (
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>—</span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <select

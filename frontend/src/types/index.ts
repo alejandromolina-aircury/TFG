@@ -118,6 +118,7 @@ export interface ReservationPayload {
     lastName: string;
     email: string;
     phone: string;
+    allergens?: string[];
   };
 }
 
@@ -140,6 +141,17 @@ export interface ReservationConfirmation {
     zone?: string;
     note?: string;
   };
+}
+
+export interface NewReservationEventPayload {
+  id: string;
+  date: string;
+  pax: number;
+  status: BookingStatus;
+  tableName: string | null;
+  zoneName: string | null;
+  customerName: string;
+  customerEmail: string;
 }
 
 export interface MenuItem {
