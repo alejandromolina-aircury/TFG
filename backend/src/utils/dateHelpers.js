@@ -3,28 +3,36 @@
 const { AVAILABILITY } = require('../config/constants');
 
 /**
- * Formatea una fecha a YYYY-MM-DD
+ * Formatea una fecha a YYYY-MM-DD (en hora local del sistema)
  */
 function formatDate(date) {
   if (!(date instanceof Date)) date = new Date(date);
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
- * Formatea una hora a HH:mm
+ * Formatea una hora a HH:mm (en hora local del sistema)
  */
 function formatTime(date) {
   if (!(date instanceof Date)) date = new Date(date);
-  return date.toTimeString().slice(0, 5);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 /**
- * Combina fecha y hora en un DateTime
+ * Combina fecha y hora en un DateTime.
+ * IMPORTANTE: El servidor debe tener TZ=Europe/Madrid configurado
+ * para que esto se interprete correctamente como la hora local de España.
  * @param {string} dateStr - "2025-02-10"
  * @param {string} timeStr - "14:30"
  * @returns {Date}
  */
 function combineDateAndTime(dateStr, timeStr) {
+  // Al no especificar Z ni offset, JS lo interpreta como hora local del sistema (node process)
   return new Date(`${dateStr}T${timeStr}:00`);
 }
 
