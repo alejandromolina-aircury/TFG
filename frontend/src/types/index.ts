@@ -142,6 +142,17 @@ export interface ReservationConfirmation {
   };
 }
 
+export interface NewReservationEventPayload {
+  id: string;
+  date: string;
+  pax: number;
+  status: BookingStatus;
+  tableName: string | null;
+  zoneName: string | null;
+  customerName: string;
+  customerEmail: string;
+}
+
 export interface MenuItem {
   id: number;
   name: string;
