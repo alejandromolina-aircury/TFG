@@ -9,6 +9,23 @@ vi.mock('../../../services/api', () => ({
   getPublicConfig: vi.fn(),
 }));
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const keys: Record<string, string> = {
+        'reservation.step1Title': 'Haz tu Reserva',
+        'reservation.dateLabel': 'Fecha',
+        'reservation.timeLabel': 'Hora',
+        'reservation.paxLabel': 'Comensales',
+        'reservation.nextBtn': 'Siguiente →',
+        'reservation.loadingSlots': 'Cargando horarios...',
+        'reservation.errorNoSlots': 'No hay horarios disponibles para este día y número de comensales. Prueba con otra fecha.',
+      };
+      return keys[key] || key;
+    },
+  }),
+}));
+
 describe('Step1DateTime Component', () => {
   const onNext = vi.fn();
 
