@@ -669,6 +669,12 @@ img {
   display: flex !important;
 }
 
+/* Default state for mobile elements (hidden on desktop) */
+.mobile-menu-toggle,
+.mobile-menu-overlay {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .desktop-only {
     display: none !important;
