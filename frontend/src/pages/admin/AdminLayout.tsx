@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import '../../styles/pages/admin/AdminLayout.css';
 
 const navLinks = [
@@ -14,6 +14,7 @@ const navLinks = [
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -52,8 +53,13 @@ export default function AdminLayout() {
               }
               onClick={() => setSidebarOpen(false)}
             >
-              <span className="sidebar-nav__icon">{link.icon}</span>
-              {link.label}
+              {({ isActive }) => (
+                <>
+                  <span className="sidebar-nav__icon">{link.icon}</span>
+                  {link.label}
+                  {isActive && <span style={{ marginLeft: 'auto', fontSize: '0.8rem' }}>➜</span>}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -69,17 +75,29 @@ export default function AdminLayout() {
       {/* Main area */}
       <div className="admin-main">
         <header className="admin-topbar">
-          <button
-            className="admin-topbar__hamburger"
-            onClick={() => setSidebarOpen((v) => !v)}
-            aria-label="Abrir menú"
-          >
-            ☰
-          </button>
-          <span className="admin-topbar__title">Mesón Marinero</span>
-          <span className="admin-topbar__date" style={{ textTransform: 'capitalize' }}>
-            📅 {today}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              className="admin-topbar__hamburger"
+              onClick={() => setSidebarOpen((v) => !v)}
+              aria-label="Abrir menú"
+            >
+              ☰
+            </button>
+            <span className="admin-topbar__title">Mesón Marinero</span>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <button 
+              className="theme-toggle-btn" 
+              onClick={toggleTheme}
+              title={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <span className="admin-topbar__date" style={{ textTransform: 'capitalize' }}>
+              📅 {today}
+            </span>
+          </div>
         </header>
 
         <main className="admin-content">
