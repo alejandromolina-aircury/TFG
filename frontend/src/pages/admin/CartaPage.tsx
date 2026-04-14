@@ -94,7 +94,7 @@ function SortableCategoryCard({
             e.stopPropagation(); // Evitar disparar el drag
             onEditCategory(category);
           }}
-          style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer', fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '4px' }}
+          style={{ background: 'var(--input-bg)', border: '1px solid var(--border)', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: '4px' }}
         >
           Editar
         </button>
@@ -304,7 +304,7 @@ export default function CartaPage() {
             setIsCategoryModalOpen(true);
           }}
           className="btn btn-primary"
-          style={{ padding: '0.6rem 1.25rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          style={{ padding: '0.6rem 1.25rem', background: 'var(--accent-action)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
           + Nueva Categoría
         </button>
@@ -371,7 +371,7 @@ export default function CartaPage() {
               <DragOverlay dropAnimation={null}>
                 {activeId ? (
                   <div style={{
-                    background: 'var(--primary)',
+                    background: 'var(--accent-action)',
                     color: 'white',
                     padding: '0.75rem 1.5rem',
                     borderRadius: '50px',
@@ -425,14 +425,14 @@ export default function CartaPage() {
               </div>
               <div className="admin-modal__footer">
                 {editingCategory && (
-                  <button type="button" onClick={handleDeleteCategory} style={{ padding: '0.5rem 1rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
+                  <button type="button" onClick={handleDeleteCategory} style={{ padding: '0.5rem 1rem', background: 'var(--accent-danger)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
                     Borrar
                   </button>
                 )}
-                <button type="button" onClick={() => setIsCategoryModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
+                <button type="button" onClick={() => setIsCategoryModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Guardar
                 </button>
               </div>
@@ -476,14 +476,14 @@ export default function CartaPage() {
               </div>
               <div className="admin-modal__footer">
                 {editingItem && (
-                  <button type="button" onClick={handleDeleteItem} style={{ padding: '0.5rem 1rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
+                  <button type="button" onClick={handleDeleteItem} style={{ padding: '0.5rem 1rem', background: 'var(--accent-danger)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
                     Borrar
                   </button>
                 )}
-                <button type="button" onClick={() => setIsItemModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
+                <button type="button" onClick={() => setIsItemModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Guardar
                 </button>
               </div>
