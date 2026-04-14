@@ -30,8 +30,4 @@ router.post('/availability/check', availabilityController.checkAvailability);
 // Crear nueva reserva
 router.post('/', reservationController.createReservation);
 
-// router.get('/:confirmationCode', reservationController.getReservationByCode);
-// router.patch('/:confirmationCode/cancel', reservationController.cancelReservation);
-// router.patch('/:confirmationCode/reconfirm', reservationController.reconfirmReservation);
-
 module.exports = router;
