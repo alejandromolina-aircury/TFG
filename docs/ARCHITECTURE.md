@@ -23,9 +23,9 @@ El backend sigue una arquitectura en capas para separar responsabilidades:
 El frontend utiliza un enfoque moderno basado en componentes y hooks funcionales:
 
 1. **Components:** Divididos en `common` (reutilizables) y específicos de vistas (Admin/Public).
-2. **Hooks:** Lógica compartida para acceso a datos y estado.
-3. **Contexts:** Para el estado global (Autenticación, Idioma).
-4. **Services/API:** Capa de comunicación con el backend (Axios).
+2. **Context:** Para el estado global (Autenticación, Idioma).
+3. **Services/API:** Capa de comunicación con el backend (Axios).
+4. **Types:** Definiciones de interfaces y tipos para asegurar coherencia en el flujo de datos.
 
 ---
 
