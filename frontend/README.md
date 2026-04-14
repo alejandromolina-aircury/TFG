@@ -42,14 +42,16 @@ Este directorio contiene la aplicación web del sistema, construida con **React 
 ```text
 src/
 ├── components/     # Componentes visuales organizados por dominio
-├── contexts/       # Contextos de React (Auth, i18n)
-├── hooks/          # Hooks personalizados reutilizables
-├── layouts/        # Estructuras de página comunes
+├── context/        # Estado global (Autenticación, Idioma)
 ├── locales/        # Archivos de traducción (JSON)
 ├── pages/          # Vistas principales de la aplicación
 ├── services/       # Clientes de API (Axios instance)
 ├── styles/         # Archivos CSS globales y temas
-└── utils/          # Utilidades generales
+├── tests/          # Pruebas unitarias y de integración
+├── types/          # Definiciones de interfaces TypeScript
+├── App.tsx         # Componente raíz y enrutamiento
+├── main.tsx        # Punto de entrada de React
+└── i18n.ts         # Configuración de internacionalización
 ```
 
 ## 🌍 Internacionalización (i18n)
