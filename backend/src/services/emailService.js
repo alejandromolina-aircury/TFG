@@ -182,9 +182,6 @@ exports.sendBookingCancellation = async (booking, customer) => {
     <h2>Hola, ${customer.firstName}</h2>
     <p>Te informamos que tu reserva para el día <strong>${dateStr}</strong> ha sido <strong>cancelada</strong>.</p>
     <p>Lamentamos que no puedas acompañarnos en esta ocasión. Esperamos verte pronto en ${RESTAURANT_NAME}.</p>
-    <div style="text-align: center; margin-top: 30px;">
-        <a href="https://mesonmarinero.com/reservas" class="button">Reservar de nuevo</a>
-    </div>
   `;
 
   const mailOptions = {
