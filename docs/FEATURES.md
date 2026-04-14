@@ -11,8 +11,7 @@ Este documento enumera las características implementadas y funcionales del Sist
 ## 📅 Reservas (Bookings)
 - **Portal Público:** Formulario de reserva intuitivo para clientes externos.
 - **Gestión de Estados:** Flujo completo desde `Pendiente` -> `Confirmada` -> `Sentada` -> `Completada`. Soporte para cancelaciones y no-shows.
-- **Asignación de Mesas:** Asignación manual o automática del personal a mesas específicas en el local.
-- **Tokens de Confirmación:** Sistema seguro para que los clientes confirmen o cancelen su reserva mediante un enlace único.
+- **Asignación de Mesas:** Asignación manual o automática por el personal a mesas específicas en el local.
 - **Reservas del Mismo Día:** Permite a los clientes reservar para la jornada actual según la configuración del sistema.
 
 ## 🛠️ Panel de Administración

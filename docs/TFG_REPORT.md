@@ -46,13 +46,11 @@ El sistema define tres roles principales, cada uno con interacciones específica
 El usuario final que interactúa con el portal público.
 - **Caso de Uso 1:** Realizar una reserva seleccionando fecha, hora y número de comensales.
 - **Caso de Uso 2:** Consultar el menú digital del restaurante en su idioma preferido.
-- **Caso de Uso 3:** Confirmar o cancelar una reserva a través de un enlace de correo electrónico.
-- **Caso de Uso 4:** Unirse a la lista de espera cuando no hay disponibilidad inmediata.
 
 ### 👤 Personal (Staff)
 Usuarios encargados de la operativa diaria del restaurante.
 - **Caso de Uso 1:** Gestionar el flujo de reservas (Confirmar, Sentar, Finalizar).
-- **Caso de Uso 2:** Asignar y mover reservas entre mesas de forma visual.
+- **Caso de Uso 2:** Asignar las reservas a las mesas disponibles.
 - **Caso de Uso 3:** Consultar el historial y preferencias de un cliente antes de su llegada.
 - **Caso de Uso 4:** Registrar reservas manuales (telefónicas o presenciales).
 
@@ -74,7 +72,6 @@ erDiagram
     STAFF ||--o{ BOOKING : "gestiona"
     CUSTOMER ||--o{ BOOKING : "realiza"
     CUSTOMER ||--o{ CUSTOMERNOTE : "tiene"
-    CUSTOMER ||--o{ WAITLIST : "se une a"
     ZONE ||--o{ TABLE : "contiene"
     TABLE ||--o{ BOOKING : "es asignada a"
     SHIFT ||--o{ CLOSURE : "se ve afectado por"
@@ -134,13 +131,6 @@ erDiagram
         boolean isActive
     }
 
-    WAITLIST {
-        string id PK
-        datetime date
-        int pax
-        boolean isResolved
-        string customerId FK
-    }
 ```
 
 ---
@@ -156,7 +146,6 @@ erDiagram
 | `Table` | Entidades físicas del restaurante con capacidades específicas. |
 | `Zone` | Áreas geográficas del local (Terraza, Salón, etc.). |
 | `Shift` | Definición de horarios de apertura y reglas de reserva. |
-| `Waitlist` | Clientes en espera de una cancelación para obtener mesa. |
 | `MenuCategory` | Clasificaciones del menú (Entrantes, Carnes, etc.). |
 | `MenuItem` | Platos individuales con precio y descripción. |
 | `Closure` | Bloqueos temporales de fechas o turnos (festivos, eventos). |
