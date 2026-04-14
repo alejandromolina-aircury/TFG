@@ -54,12 +54,14 @@ Este directorio contiene el núcleo del sistema, una API REST construida con **E
 
 ```text
 src/
+├── config/         # Configuraciones globales (DB, Auth, Email)
 ├── controllers/    # Controladores de las rutas (manejo de req/res)
+├── middleware/     # Middlewares (Auth, Error handler, Validation)
 ├── routes/         # Definición de endpoints
 ├── services/       # Lógica de negocio (núcleo del sistema)
-├── middleware/     # Middlewares (Auth, Error handler, Validation)
-├── config/         # Configuraciones globales (DB, Auth, Email)
+├── tests/          # Pruebas automatizadas (Vitest)
 ├── utils/          # Funciones de utilidad
+├── socketManager.js # Gestión de conexiones WebSocket
 └── index.js        # Punto de entrada de la aplicación
 ```
 
