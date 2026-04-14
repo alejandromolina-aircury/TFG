@@ -159,8 +159,9 @@
 }
 
 .customer-badge--blacklist {
-  background-color: var(--accent-danger);
-  color: white;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 [data-theme='dark'] .customer-badge--blacklist {
@@ -175,9 +176,9 @@
 }
 
 .customer-badge--allergy {
-  background-color: var(--accent-danger);
-  color: white;
-  border: 1px solid var(--accent-danger);
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 [data-theme='dark'] .customer-badge--allergy {
