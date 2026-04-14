@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useReveal } from '../services/useReveal';
-import { getPublicFrontendConfig } from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 const defaultSpecialties = [
   {
@@ -34,22 +34,13 @@ const defaultTitle = {
 const Specialties: React.FC = () => {
   const revealRef = useReveal();
   const { i18n } = useTranslation();
-  const [config, setConfig] = useState<any>(null);
-
-  useEffect(() => {
-    getPublicFrontendConfig()
-      .then(data => {
-        if (data && data.specialties) {
-          setConfig(data.specialties);
-        }
-      })
-      .catch(err => console.error('Failed to load specialties config', err));
-  }, []);
+  const { config } = useConfig();
+  const specialtiesConfig = config.specialties;
 
   const currentLang = i18n.language?.split('-')[0] || 'es';
   
-  const title = config?.title?.[currentLang] || defaultTitle[currentLang as keyof typeof defaultTitle] || defaultTitle.es;
-  const items = config?.items || defaultSpecialties;
+  const title = specialtiesConfig?.title?.[currentLang] || defaultTitle[currentLang as keyof typeof defaultTitle] || defaultTitle.es;
+  const items = specialtiesConfig?.items || defaultSpecialties;
 
   return (
     <section className="specialties" id="menu" ref={revealRef}>

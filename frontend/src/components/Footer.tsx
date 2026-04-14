@@ -1,15 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '../context/ConfigContext';
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const { config } = useConfig();
+
   return (
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-column">
           <h4>{t('footer.addressTitle')}</h4>
-          <p>{t('footer.address1')}</p>
-          <p>{t('footer.address2')}</p>
+          <p>{config.restaurant_address}</p>
           <div className="footer-map mt-2">
             <img src="/img/Mapa.jpg" alt={t('footer.googleMap')} className="footer-map__img" />
           </div>
@@ -17,8 +19,8 @@ const Footer: React.FC = () => {
         
         <div className="footer-column">
           <h4>{t('footer.contactTitle')}</h4>
-          <p>Tel: +34 912 345 678</p>
-          <p>Email: info@mesonmarinero.com</p>
+          <p>Tel: {config.restaurant_phone}</p>
+          <p>Email: {config.restaurant_email}</p>
         </div>
         
         <div className="footer-column">

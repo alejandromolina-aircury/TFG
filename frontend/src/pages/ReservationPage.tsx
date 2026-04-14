@@ -5,12 +5,14 @@ import '../styles/pages/ReservationPage.css';
 import Step1DateTime from '../components/reservation/Step1DateTime';
 import Step2User from '../components/reservation/Step2User';
 import Step3Success from '../components/reservation/Step3Success';
+import { useConfig } from '../context/ConfigContext';
 import type { ReservationConfirmation } from '../types';
 
 type Step = 1 | 2 | 3;
 
 export default function ReservationPage() {
   const { t } = useTranslation();
+  const { config } = useConfig();
   const [step, setStep] = useState<Step>(1);
   const [bookingData, setBookingData] = useState<{ date: string; time: string; pax: number } | null>(null);
   const [confirmation, setConfirmation] = useState<ReservationConfirmation | null>(null);
@@ -49,7 +51,7 @@ export default function ReservationPage() {
                 {t('reservation.pageQuote')}
               </div>
               <div className="image-panel__info">
-                <span>{t('reservation.pageAddress')}</span>
+                <span>📍 {config.restaurant_address}</span>
                 <span>{t('reservation.pageHours')}</span>
                 <span>{t('reservation.pageDays')}</span>
               </div>

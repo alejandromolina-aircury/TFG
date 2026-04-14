@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useConfig } from '../context/ConfigContext';
 
 interface NavbarProps {
   showLinks?: boolean;
@@ -10,6 +11,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false }) => {
   const { t } = useTranslation();
+  const { config } = useConfig();
   const [scrolled, setScrolled] = useState<boolean>(isReservation);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -29,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
       <div className="navbar-container">
         <div className="navbar-left">
           <Link to="/" className="logo-container" onClick={closeMobileMenu}>
-            <span className="logo-text">⚓ Mesón Marinero</span>
+            <span className="logo-text">⚓ {config.restaurant_name}</span>
             <span className="logo-subtext">Alicante, Mediterráneo</span>
           </Link>
           <div className="desktop-only">
@@ -79,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
         <div className="navbar-right">
           {isReservation ? (
             <div className="phone-info">
-              {t('navbar.reservations')} · <a href="tel:965000000">965 00 00 00</a>
+              {t('navbar.reservations')} · <a href={`tel:${config.restaurant_phone.replace(/\s/g, '')}`}>{config.restaurant_phone}</a>
             </div>
           ) : (
             <>
