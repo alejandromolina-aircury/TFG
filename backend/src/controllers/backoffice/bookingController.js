@@ -49,34 +49,53 @@ exports.getAllBookings = asyncHandler(async (req, res) => {
   
   const skip = (parseInt(page) - 1) * parseInt(limit);
   
-  const [bookings, total] = await Promise.all([
+  const [allMatching, total] = await Promise.all([
     prisma.booking.findMany({
       where: whereClause,
-      include: {
-        customer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-            isVip: true,
-            isBlacklisted: true,
-            allergens: true,
-            tags: true,
-            totalVisits: true
-          }
-        },
-        table: {
-          include: { zone: true }
-        }
-      },
-      orderBy: { date: 'desc' },
-      take: parseInt(limit),
-      skip
+      select: { id: true, date: true }
     }),
     prisma.booking.count({ where: whereClause })
   ]);
+
+  const now = new Date();
+  // Sort by absolute difference to NOW
+  allMatching.sort((a, b) => {
+    return Math.abs(a.date.getTime() - now.getTime()) - Math.abs(b.date.getTime() - now.getTime());
+  });
+
+  const paginatedIds = allMatching
+    .slice(skip, skip + parseInt(limit))
+    .map(b => b.id);
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      id: { in: paginatedIds }
+    },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          isVip: true,
+          isBlacklisted: true,
+          allergens: true,
+          tags: true,
+          totalVisits: true
+        }
+      },
+      table: {
+        include: { zone: true }
+      }
+    }
+  });
+
+  // Re-sort results to match the proximity order (prisma in doesn't guarantee order)
+  bookings.sort((a, b) => {
+    return paginatedIds.indexOf(a.id) - paginatedIds.indexOf(b.id);
+  });
   
   res.json({
     status: 'success',
