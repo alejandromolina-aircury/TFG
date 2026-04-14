@@ -60,6 +60,15 @@ export async function getPublicConfig() {
 }
 
 /**
+ * Get public frontend configurations (like specialties)
+ * GET /api/public/config
+ */
+export async function getPublicFrontendConfig() {
+  const { data } = await api.get('/public/config');
+  return data.data;
+}
+
+/**
  * Get available time slots for a given date and party size
  * POST /api/public/reservations/availability/times
  */

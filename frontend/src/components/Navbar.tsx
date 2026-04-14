@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
   return (
     <header className={`sticky-navbar ${scrolled ? 'scrolled' : ''} ${mobileMenuOpen ? 'mobile-menu-active' : ''}`}>
       <div className="navbar-container">
-        <div className="navbar-left" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+        <div className="navbar-left">
           <Link to="/" className="logo-container" onClick={closeMobileMenu}>
             <span className="logo-text">⚓ Mesón Marinero</span>
             <span className="logo-subtext">Alicante, Mediterráneo</span>
@@ -110,13 +110,13 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
                 </NavLink>
               </li>
               <li>
-                <div className="mobile-language-switcher" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div className="mobile-language-switcher">
                    <LanguageSwitcher />
                 </div>
               </li>
               {!isReservation && (
-                <li style={{ marginTop: '0.5rem' }}>
-                  <Link to="/reservar" className="btn btn-primary" onClick={closeMobileMenu} style={{ width: '100%' }}>
+                <li className="mobile-nav-cta">
+                  <Link to="/reservar" className="btn btn-primary" onClick={closeMobileMenu}>
                     {t('navbar.bookTable')}
                   </Link>
                 </li>

@@ -223,16 +223,16 @@
   font-size: 0.9rem;
   color: var(--accent-action);
   padding: 0.75rem;
-  background: rgba(217,83,79,0.07);
+  background: rgba(225, 29, 72, 0.05);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(217,83,79,0.2);
+  border: 1px solid rgba(225, 29, 72, 0.15);
 }
 
 /* ── Error message ─────────────────────────────────── */
 .error-msg {
-  background: rgba(217, 83, 79, 0.08);
-  border: 1px solid rgba(217, 83, 79, 0.3);
-  color: #a02020;
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: #b91c1c;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
@@ -395,5 +395,28 @@
 @media (max-width: 480px) {
   .time-slots-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .reservation-image-panel {
+    min-height: 160px;
+    padding: 1.25rem;
+  }
+
+  .image-panel__quote {
+    font-size: 0.95rem;
+  }
+
+  .reservation-form-panel {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-title {
+    font-size: 1.35rem;
+  }
+
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
   }
 }
