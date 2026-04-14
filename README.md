@@ -9,16 +9,43 @@ Una solución integral y moderna para la gestión de reservas, clientes y operac
 
 ---
 
-## 🚀 Vista Rápida
+## 📖 Documentación del Proyecto
 
-Este sistema permite a los restaurantes gestionar su flujo completo de reservas, desde el portal público de clientes hasta un panel de administración avanzado con control de mesas en tiempo real, gestión de turnos y CRM detallado.
+Este repositorio contiene la documentación completa necesaria para el Trabajo de Fin de Grado. Puedes consultar los detalles en los siguientes enlaces:
 
-### Módulos Principales
-- **🌐 Portal Público:** Interfaz intuitiva para que los clientes realicen reservas.
-- **🛠️ Panel de Administración:** Gestión completa de reservas, mesas, zonas y configuración del sistema.
-- **👥 CRM Avanzado:** Seguimiento detallado de clientes, preferencias, alérgenos y fidelización (VIP).
-- **📊 Gestión Operativa:** Control de turnos, cierres temporales y disponibilidad de mesas.
-- **📁 Menú Digital:** Gestión de categorías y platos del restaurante.
+- 📜 [**Memoria Técnica Completa (TFG_REPORT.md)**](./docs/TFG_REPORT.md) - *Documento principal con toda la información requerida.*
+- 🏛️ [Arquitectura del Sistema](./docs/ARCHITECTURE.md)
+- 🗄️ [Detalle del Esquema de BD](./docs/DATABASE_SCHEMA.md)
+
+---
+
+## 🎯 Resumen y Propósito
+El **Sistema de Gestión de Restaurantes** es una plataforma diseñada para centralizar la operativa de un restaurante. Permite a los clientes realizar reservas online y a los administradores gestionar el local, las mesas, los turnos y la base de datos de clientes de forma eficiente y en tiempo real.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+- **Backend:** Node.js, Express, PostgreSQL, Prisma ORM, Socket.io, JWT.
+- **Frontend:** React 19, Vite, TypeScript, i18next, Tailwind CSS / Vanilla CSS.
+- **Infraestructura:** Docker, Docker Compose, pgAdmin.
+
+---
+
+## 👥 Roles y Casos de Uso
+El sistema está diseñado para tres tipos de usuarios:
+
+1. **Cliente (Público):**
+   - Realizar reservas y unirse a lista de espera.
+   - Consultar el menú interactivo multilingüe.
+   - Gestionar sus reservas mediante tokens de confirmación.
+2. **Personal (Staff):**
+   - Controlar el flujo de comensales en tiempo real.
+   - Asignar mesas y gestionar estados de reserva.
+   - Consultar perfiles de clientes y alérgenos.
+3. **Administrador:**
+   - Configurar la estructura del local (Zonas/Mesas).
+   - Definir horarios, turnos y cierres.
+   - Gestionar el menú y los usuarios del sistema.
 
 ---
 
@@ -41,25 +68,26 @@ graph TD
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🗄️ Modelo de Datos y Tablas
 
-### Backend
-- **Core:** Node.js, Express.js
-- **Base de Datos:** PostgreSQL
-- **ORM:** Prisma
-- **Validación:** Joi
-- **Autenticación:** JSON Web Tokens (JWT) & bcryptjs
-- **Logging:** Winston & Morgan
-- **Testing:** Vitest
+El sistema utiliza un modelo relacional centrado en la eficiencia operativa.
 
-### Frontend
-- **Core:** React 19, TypeScript
-- **Build Tool:** Vite
-- **Estado/Rutas:** React Router 7
-- **Estilos:** Vanilla CSS (Moderno)
-- **Internacionalización:** i18next (ES, EN, FR)
-- **Drag & Drop:** dnd-kit (para gestión de mesas)
-- **Comunicación:** Socket.io-client, Axios
+### Diagrama ER (Resumen)
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ BOOKING : "realiza"
+    TABLE ||--o{ BOOKING : "asignada a"
+    ZONE ||--o{ TABLE : "contiene"
+    SHIFT ||--o{ CLOSURE : "afecta"
+    MENUCATEGORY ||--o{ MENUITEM : "contiene"
+```
+
+### Tablas Principales
+- **Customer:** CRM y fidelización.
+- **Booking:** Gestión de reservas y estados.
+- **Table / Zone:** Infraestructura física del local.
+- **Shift / Closure:** Control de disponibilidad horaria.
+- **Staff:** Gestión de accesos.
 
 ---
 
@@ -105,14 +133,26 @@ graph TD
 
 ---
 
-## 📚 Documentación Detallada
+## 🚀 Despliegue (Estado Actual)
 
-Para más información, consulta los siguientes documentos:
+> [!IMPORTANT]
+> **Pendiente de Despliegue:** Actualmente el proyecto se ejecuta localmente mediante Docker para desarrollo y pruebas.
+> 
+> **Plan de Despliegue (Placeholder):**
+> - **Frontend:** Vercel / Netlify.
+> - **Backend:** Render / Railway.
+> - **Database:** Supabase / PostgreSQL.
 
-- 🏛️ [Arquitectura del Sistema](./docs/ARCHITECTURE.md)
-- 🗄️ [Esquema de Base de Datos](./docs/DATABASE_SCHEMA.md)
-- 📝 [Funcionalidades e Hitos](./docs/FEATURES.md)
-- 🔌 [Referencia de la API](./backend/API.md)
+---
+
+## 📸 Capturas de Pantalla
+
+<table>
+  <tr>
+    <td><img src="/frontend/public/img/Home.png" width="400"/><br/><sub>Portal Público - Home</sub></td>
+    <td><img src="https://placehold.co/800x450/2d3748/ffffff?text=Admin+Dashboard" width="400"/><br/><sub>Panel de Administración</sub></td>
+  </tr>
+</table>
 
 ---
 
