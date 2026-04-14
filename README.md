@@ -37,9 +37,8 @@ El **Sistema de Gestión de Restaurantes** es una plataforma diseñada para cent
 El sistema está diseñado para tres tipos de usuarios:
 
 1. **Cliente (Público):**
-   - Realizar reservas y unirse a lista de espera.
+   - Realizar reservas y consultar disponibilidad.
    - Consultar el menú interactivo multilingüe.
-   - Gestionar sus reservas mediante tokens de confirmación.
 2. **Personal (Staff):**
    - Controlar el flujo de comensales en tiempo real.
    - Asignar mesas y gestionar estados de reserva.
