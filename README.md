@@ -125,11 +125,14 @@ erDiagram
 
 ```text
 .
-├── backend/            # API, Base de Datos y Lógica de Servidor -> [Ver README](./backend/README.md)
-├── frontend/           # Interfaz de Usuario y Lógica Cliente -> [Ver README](./frontend/README.md)
-├── docs/               # Documentación detallada del sistema
-├── specs/              # Especificaciones técnicas y planes de desarrollo
-└── docker-compose.yml  # Configuración de Docker
+├── backend/                # API, Base de Datos y Lógica de Servidor -> [Ver README](./backend/README.md)
+├── frontend/               # Interfaz de Usuario y Lógica Cliente -> [Ver README](./frontend/README.md)
+├── docs/                   # Documentación detallada del sistema
+├── specs/                  # Especificaciones técnicas y planes de desarrollo
+├── docker-compose.yml      # Configuración de Docker (Desarrollo)
+├── docker-compose.prod.yml # Configuración de Docker (Producción)
+├── testapi.sh              # Script de prueba para la API
+└── LICENSE                 # Licencia del proyecto
 ```
 
 ---
