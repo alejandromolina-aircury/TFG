@@ -176,17 +176,17 @@ docker-compose logs -f backend
 A continuación se presentan las interfaces clave del sistema:
 
 ### Interfaz Pública (Portal de Reservas)
-![Portal de Reservas - Home](/frontend/public/img/HomeExample.png)
+![Portal de Reservas - Home](../frontend/public/img/HomeExample.png)
 *Descripción: Pantalla principal donde el cliente puede ver la propuesta gastronómica y comenzar el proceso de reserva.*
 
 ### Panel de Administración (Gestión de Mesas)
-![Dashboard Admin - Mesas](/frontend/public/img/MesasExample.png)
+![Dashboard Admin - Mesas](../frontend/public/img/MesasExample.png)
 *Descripción: Mapa interactivo del restaurante donde el personal gestiona la ocupación en tiempo real.*
 
 ### Gestión de Clientes (CRM)
-![Admin CRM - Perfil de Cliente](/frontend/public/img/ClienteExample.png)
+![Admin CRM - Perfil de Cliente](../frontend/public/img/ClienteExample.png)
 *Descripción: Vista detallada de un cliente, mostrando su historial de visitas, alérgenos y etiquetas VIP.*
 
 ### Configuración del Menú
-![Admin Menu - Gestión de Platos](/frontend/public/img/MenuExample.png)
+![Admin Menu - Gestión de Platos](../frontend/public/img/MenuExample.png)
 *Descripción: Interfaz para añadir, editar o desactivar platos y categorías del menú digital.*

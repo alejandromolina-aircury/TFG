@@ -149,8 +149,8 @@ erDiagram
 
 <table>
   <tr>
-    <td><img src="/frontend/public/img/HomeExample.png" width="400"/><br/><sub>Portal Público - Home</sub></td>
-    <td><img src="/frontend/public/img/AdminExample.png" width="400"/><br/><sub>Panel de Administración</sub></td>
+    <td><img src="frontend/public/img/HomeExample.png" width="400"/><br/><sub>Portal Público - Home</sub></td>
+    <td><img src="frontend/public/img/AdminExample.png" width="400"/><br/><sub>Panel de Administración</sub></td>
   </tr>
 </table>
 
