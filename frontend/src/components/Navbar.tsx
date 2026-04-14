@@ -17,11 +17,15 @@ const Navbar: React.FC<NavbarProps> = ({ showLinks = true, isReservation = false
 
   React.useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (isReservation) {
+        setScrolled(true);
+      } else {
+        setScrolled(window.scrollY > 20);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isReservation]);
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const closeMobileMenu = () => setMobileMenuOpen(false);
