@@ -183,7 +183,7 @@ export default function ConfiguracionPage() {
                                 </div>
                                 <button 
                                   onClick={() => handleEditShiftClick(shift)} 
-                                  style={{ cursor: 'pointer', padding: '0.4rem 0.75rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}
+                                  style={{ cursor: 'pointer', padding: '0.4rem 0.75rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}
                                 >
                                     Editar
                                 </button>
@@ -270,7 +270,7 @@ export default function ConfiguracionPage() {
               <button
                 type="submit"
                 form="shift-form"
-                style={{ padding: '0.5rem 1.25rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                style={{ padding: '0.5rem 1.25rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
               >
                 Guardar Cambios
               </button>
@@ -361,7 +361,7 @@ export default function ConfiguracionPage() {
                             justifyContent: 'center',
                             cursor: 'pointer',
                             border: '1px solid var(--border)',
-                            background: isSelected ? 'var(--primary)' : 'transparent',
+                            background: isSelected ? 'var(--accent-action)' : 'transparent',
                             color: isSelected ? 'white' : 'inherit',
                             fontWeight: 600,
                             transition: 'all 0.2s'
@@ -386,7 +386,7 @@ export default function ConfiguracionPage() {
               <button
                 type="submit"
                 form="config-form"
-                style={{ padding: '0.5rem 1.25rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                style={{ padding: '0.5rem 1.25rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
               >
                 Guardar Cambios
               </button>
