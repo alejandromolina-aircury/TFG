@@ -14,6 +14,8 @@ Una solución integral y moderna para la gestión de reservas, clientes y operac
 Este repositorio contiene la documentación completa necesaria para el Trabajo de Fin de Grado. Puedes consultar los detalles en los siguientes enlaces:
 
 - 📜 [**Memoria Técnica Completa (TFG_REPORT.md)**](./docs/TFG_REPORT.md) - *Documento principal con toda la información requerida.*
+- ⚙️ [**README del Backend**](./backend/README.md) - *Instalación y detalles técnicos de la API.*
+- 🎨 [**README del Frontend**](./frontend/README.md) - *Instalación y detalles técnicos de la interfaz.*
 - 🏛️ [Arquitectura del Sistema](./docs/ARCHITECTURE.md)
 - 🗄️ [Detalle del Esquema de BD](./docs/DATABASE_SCHEMA.md)
 
@@ -124,8 +126,8 @@ erDiagram
 
 ```text
 .
-├── backend/            # Lógica de servidor, API y Base de Datos
-├── frontend/           # Interfaz de usuario (React)
+├── backend/            # API, Base de Datos y Lógica de Servidor -> [Ver README](./backend/README.md)
+├── frontend/           # Interfaz de Usuario y Lógica Cliente -> [Ver README](./frontend/README.md)
 ├── docs/               # Documentación detallada del sistema
 ├── specs/              # Especificaciones técnicas y planes de desarrollo
 └── docker-compose.yml  # Configuración de Docker
