@@ -1,0 +1,67 @@
+# 🏛️ Arquitectura del Sistema
+
+Este documento describe la arquitectura técnica y los patrones de diseño utilizados en el proyecto.
+
+## 🏗️ Resumen de la Estructura
+
+El sistema está diseñado bajo un patrón **monorepo simplificado** con dos directorios principales: `/backend` y `/frontend`.
+
+### 🗄️ Backend (Node.js & Express)
+El backend sigue una arquitectura en capas para separar responsabilidades:
+
+1. **Routes:** Definen los endpoints de la API y agrupan controladores por recurso.
+2. **Controllers:** Manejan el flujo de entrada/salida (HTTP requests/responses).
+3. **Services:** Lógica de negocio pura. Es donde reside la inteligencia del sistema (ej: lógica de asignación de mesas).
+4. **Prisma/Database:** Capa de acceso a datos.
+
+**Patrones Utilizados:**
+- **Layered Architecture:** Separación clara entre HTTP y lógica de negocio.
+- **Middleware Pattern:** Para validaciones (Joi), autenticación (JWT) y manejo de errores.
+- **Service Pattern:** Para facilitar el testing y la reutilización de código.
+
+### 🎨 Frontend (React & TypeScript)
+El frontend utiliza un enfoque moderno basado en componentes y hooks funcionales:
+
+1. **Components:** Divididos en `common` (reutilizables) y específicos de vistas (Admin/Public).
+2. **Hooks:** Lógica compartida para acceso a datos y estado.
+3. **Contexts:** Para el estado global (Autenticación, Idioma).
+4. **Services/API:** Capa de comunicación con el backend (Axios).
+
+---
+
+## 🔄 Flujo de Datos
+
+### Proceso de Reserva (Booking Flow)
+```mermaid
+sequenceDiagram
+    participant User as Cliente Web
+    participant FE as Frontend (Public)
+    participant BE as Backend (Express)
+    participant DB as Postgres (Prisma)
+    participant IO as Socket.io
+
+    User->>FE: Introduce datos reserva
+    FE->>BE: POST /api/bookings
+    BE->>DB: Verifica disponibilidad
+    DB-->>BE: Disponibilidad confirmada
+    BE->>DB: Crea registro PENDING
+    BE->>IO: Notifica al Panel Admin
+    BE-->>FE: 201 Created (Token confirmación)
+    IO-->>FE: Actualiza UI Admin en tiempo real
+```
+
+---
+
+## 🔌 Integraciones y Servicios Externos
+
+- **Email Service:** El backend utiliza `nodemailer` para el envío de correos electrónicos de confirmación, reconfirmación y recordatorio.
+- **WebSockets:** Se utiliza `Socket.io` para que el panel de administración reciba cambios de estado y nuevas reservas sin necesidad de refrescar la página.
+
+---
+
+## 🛡️ Seguridad
+
+- **JWT:** Las rutas de administración están protegidas mediante Bearer Tokens almacenados en el navegador.
+- **CORS:** Configurado para permitir únicamente peticiones desde el dominio del frontend.
+- **Helmet:** Utilizado en el backend para establecer varias cabeceras HTTP que mejoran la seguridad.
+- **Bcryptjs:** Para el hasheo seguro de contraseñas del personal.

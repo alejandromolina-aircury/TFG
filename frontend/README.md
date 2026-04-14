@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# 🎨 Frontend - Interfaz de Usuario
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este directorio contiene la aplicación web del sistema, construida con **React 19**, **TypeScript** y **Vite**.
 
-Currently, two official plugins are available:
+## 🛠️ Tecnologías Principales
+- **Core:** React 19 + TypeScript
+- **Gestión de Rutas:** React Router 7
+- **Construcción:** Vite
+- **Internacionalización:** i18next
+- **Comunicación API:** Axios
+- **WebSockets:** Socket.io-client
+- **Drag & Drop:** dnd-kit
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📦 Instalación
 
-## React Compiler
+1. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. **Configurar el archivo `.env`:**
+   Crea un archivo `.env` en la raíz de `/frontend`:
+   ```env
+   VITE_API_URL="http://localhost:3000/api"
+   VITE_SOCKET_URL="http://localhost:3000"
+   ```
 
-## Expanding the ESLint configuration
+3. **Ejecutar en desarrollo:**
+   ```bash
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Scripts Disponibles
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- `npm run dev`: Inicia el servidor de desarrollo de Vite.
+- `npm run build`: Compila la aplicación para producción.
+- `npm run lint`: Ejecuta ESLint para verificar la calidad del código.
+- `npm run test`: Ejecuta las pruebas unitarias con Vitest.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📁 Estructura de Carpetas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+src/
+├── components/     # Componentes visuales organizados por dominio
+├── contexts/       # Contextos de React (Auth, i18n)
+├── hooks/          # Hooks personalizados reutilizables
+├── layouts/        # Estructuras de página comunes
+├── locales/        # Archivos de traducción (JSON)
+├── pages/          # Vistas principales de la aplicación
+├── services/       # Clientes de API (Axios instance)
+├── styles/         # Archivos CSS globales y temas
+└── utils/          # Utilidades generales
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌍 Internacionalización (i18n)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+La aplicación soporta tres idiomas: **Español**, **Inglés** y **Francés**.
+Las traducciones se encuentran en `src/locales/`. Para añadir nuevos términos, asegúrate de actualizar los tres archivos JSON correspondientes.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🧪 Testing
+Se utiliza **Vitest** y **React Testing Library** para asegurar la calidad de los componentes. Los tests se encuentran junto a sus respectivos componentes o en el directorio `src/tests`.
