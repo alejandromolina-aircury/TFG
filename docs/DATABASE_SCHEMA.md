@@ -13,6 +13,7 @@ erDiagram
     ZONE ||--o{ TABLE : "contiene"
     TABLE ||--o{ BOOKING : "es asignada a"
     SHIFT ||--o{ CLOSURE : "se ve afectado por"
+    SHIFT ||--o{ WAITLIST : "organiza"
     MENUCATEGORY ||--o{ MENUITEM : "contiene"
 
     STAFF {
@@ -37,6 +38,9 @@ erDiagram
         int totalVisits
         boolean isVip
         boolean isBlacklisted
+        string blacklistReason
+        string[] tags
+        int totalNoShows
         string[] previousEmails
         string[] previousPhones
         string[] previousNames
@@ -51,7 +55,8 @@ erDiagram
         string specialRequests
         string customerId FK
         int tableId FK
-        string confirmationToken
+        string confirmationToken UK
+        string reconfirmToken UK
         BookingSource source
     }
 
@@ -69,6 +74,44 @@ erDiagram
         string name
         boolean isActive
         string description
+        int displayOrder
+    }
+
+    SHIFT {
+        int id PK
+        string name
+        string startTime
+        string endTime
+        int[] daysOfWeek
+        int slotInterval
+        int maxBookingsPerSlot
+        boolean isActive
+    }
+
+    CLOSURE {
+        string id PK
+        datetime startDate
+        datetime endDate
+        string reason
+        boolean isFullDay
+        int shiftId FK
+    }
+
+    MENUCATEGORY {
+        int id PK
+        string name
+        string description
+        boolean isActive
+        int displayOrder
+    }
+
+    MENUITEM {
+        int id PK
+        string name
+        string description
+        string price
+        int categoryId FK
+        boolean isActive
         int displayOrder
     }
 ```

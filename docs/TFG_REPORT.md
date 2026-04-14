@@ -90,16 +90,22 @@ erDiagram
         string[] allergens
         boolean isVip
         boolean isBlacklisted
+        string[] previousEmails
+        string[] previousPhones
+        string[] previousNames
     }
 
     BOOKING {
         string id PK
         datetime date
         int pax
+        int duration
         enum status
         string specialRequests
         string customerId FK
         int tableId FK
+        string confirmationToken
+        enum source
     }
 
     TABLE {
@@ -108,6 +114,7 @@ erDiagram
         int minCapacity
         int maxCapacity
         int zoneId FK
+        boolean isActive
     }
 
     SHIFT {
@@ -116,6 +123,23 @@ erDiagram
         string startTime
         string endTime
         int[] daysOfWeek
+        int slotInterval
+    }
+
+    STAFF {
+        string id PK
+        string email UK
+        string name
+        enum role
+        boolean isActive
+    }
+
+    WAITLIST {
+        string id PK
+        datetime date
+        int pax
+        boolean isResolved
+        string customerId FK
     }
 ```
 
@@ -127,6 +151,7 @@ erDiagram
 | :--- | :--- |
 | `Staff` | Usuarios del sistema con acceso al panel (Admin/Staff). |
 | `Customer` | Perfiles de clientes con historial, preferencias e identidad unificada. |
+| `CustomerNote` | Notas internas del personal sobre clientes específicos. |
 | `Booking` | Registros de reservas con fecha, estado y asociación a mesas. |
 | `Table` | Entidades físicas del restaurante con capacidades específicas. |
 | `Zone` | Áreas geográficas del local (Terraza, Salón, etc.). |
@@ -135,6 +160,7 @@ erDiagram
 | `MenuCategory` | Clasificaciones del menú (Entrantes, Carnes, etc.). |
 | `MenuItem` | Platos individuales con precio y descripción. |
 | `Closure` | Bloqueos temporales de fechas o turnos (festivos, eventos). |
+| `SystemConfig` | Ajustes globales dinámicos (tiempos, políticas, etc.). |
 
 ---
 
@@ -158,16 +184,25 @@ docker-compose logs -f backend
 
 ---
 
-## 🚀 7. Despliegue (Pendiente)
+## 🚀 7. Guía de Despliegue y Producción
 
-> [!NOTE]
-> **Estado del Despliegue:** El sistema se encuentra actualmente en fase de optimización final antes de su despliegue en producción.
-> 
-> **Próximos Pasos (Placeholder):**
-> - Despliegue del Frontend en **Vercel** o **Netlify**.
-> - Despliegue del Backend en **Render**, **Railway** o **AWS EC2**.
-> - Base de Datos gestionada en **Supabase** o **ElephantSQL**.
-> - Configuración de CI/CD mediante **GitHub Actions**.
+El sistema está diseñado para ser desplegado en entornos modernos de nube mediante una arquitectura desacoplada:
+
+### Frontend (Producción)
+1. **Compilación:** `npm run build` genera una carpeta `dist/` optimizada.
+2. **Hosting:** Recomendado **Vercel** o **Netlify** por su soporte nativo de React y manejo de variables de entorno.
+3. **Optimización:** Las imágenes estáticas deben servirse mediante un CDN o optimizarse antes del despliegue.
+
+### Backend (Producción)
+1. **Infraestructura:** Recomendado **Render**, **Railway** o **AWS EC2**.
+2. **Base de Datos:** PostgreSQL gestionado en **Supabase** o **PostgreSQL administrado de AWS**.
+3. **Variables Críticas:** Asegurar la configuración de `JWT_SECRET`, `DATABASE_URL` y credenciales SMTP.
+4. **Ejecución:** Utilizar gestores de procesos como **PM2** o ejecutar dentro de contenedores Docker.
+
+### Pipeline CI/CD (Opcional)
+Se recomienda el uso de **GitHub Actions** para:
+- Ejecución automática de tests con Vitest.
+- Build y despliegue continuo al fusionar cambios en la rama `main`.
 
 ---
 
