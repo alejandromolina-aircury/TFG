@@ -497,11 +497,11 @@
 }
 /* ── Customer status row colors ────────────────────── */
 .customer-row--blacklisted {
-  background-color: rgba(231, 76, 60, 0.08) !important;
+  background-color: rgba(225, 29, 72, 0.06) !important;
 }
 
 .customer-row--blacklisted:hover td {
-  background-color: rgba(231, 76, 60, 0.12) !important;
+  background-color: rgba(225, 29, 72, 0.1) !important;
 }
 
 .customer-row--vip {
@@ -567,6 +567,18 @@
   background-color: #082f49;
   color: #7dd3fc;
   border: 1px solid #0c4a6e;
+}
+
+.customer-badge--allergy {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+[data-theme='dark'] .customer-badge--allergy {
+  background-color: #450a0a;
+  color: #fca5a5;
+  border: 1px solid #7f1d1d;
 }
 
 /* Booking Requests Cell */
