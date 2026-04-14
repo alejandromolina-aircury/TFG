@@ -73,8 +73,8 @@ graph TD
 ### Pasos Generales
 1. **Clonar el repositorio:**
    ```bash
-   git clone <repo-url>
-   cd TFG
+    git clone https://github.com/Amolnav/TFG
+    cd TFG
    ```
 
 2. **Configurar variables de entorno:**
