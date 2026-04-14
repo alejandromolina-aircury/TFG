@@ -15,12 +15,16 @@ import Home from './pages/Home';
 import MenuPage from './pages/MenuPage';
 import AboutPage from './pages/AboutPage';
 import ScrollToTop from './components/ScrollToTop';
+import { ConfigProvider } from './context/ConfigContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
+    <ConfigProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <ScrollToTop />
+          <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/reservar" element={<ReservationPage />} />
@@ -52,6 +56,8 @@ export default function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </ThemeProvider>
     </BrowserRouter>
+    </ConfigProvider>
   );
 }
