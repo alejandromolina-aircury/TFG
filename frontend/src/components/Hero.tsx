@@ -17,7 +17,7 @@ const Hero: React.FC = () => {
         </p>
         <div className="hero-ctas reveal">
           <Link to="/reservar" className="btn btn-primary">{t('hero.bookNow')}</Link>
-          <Link to="/carta" className="btn btn-outline" style={{ color: 'white', borderColor: 'white' }}>{t('hero.viewMenu')}</Link>
+          <Link to="/carta" className="btn btn-outline-light">{t('hero.viewMenu')}</Link>
         </div>
       </div>
     </section>

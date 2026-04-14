@@ -10,8 +10,8 @@ const Footer: React.FC = () => {
           <h4>{t('footer.addressTitle')}</h4>
           <p>{t('footer.address1')}</p>
           <p>{t('footer.address2')}</p>
-          <div className="map-placeholder mt-2">
-            <div className="placeholder-image" style={{ height: '150px', fontSize: '1rem' }}>{t('footer.googleMap')}</div>
+          <div className="footer-map mt-2">
+            <img src="/img/Mapa.jpg" alt={t('footer.googleMap')} className="footer-map__img" />
           </div>
         </div>
         

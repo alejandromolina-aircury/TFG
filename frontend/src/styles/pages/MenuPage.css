@@ -1,0 +1,150 @@
+/* frontend/src/styles/pages/MenuPage.css */
+
+.menu-container {
+  padding: 4rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ── Loading state ─────────────────────────────────── */
+.menu-loading {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.menu-loading .spinner {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.menu-loading p {
+  color: var(--text-muted);
+}
+
+/* ── Empty state ───────────────────────────────────── */
+.menu-empty {
+  text-align: center;
+  padding: 5rem 0;
+  background-color: var(--bg-light);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+}
+
+.menu-empty__title {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.menu-empty__desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ── Menu sections ─────────────────────────────────── */
+.menu-section {
+  margin-bottom: 4rem;
+}
+
+.menu-section h2 {
+  color: var(--primary);
+  border-bottom: 2px solid var(--accent-decor);
+  padding-bottom: 0.75rem;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.menu-section__desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ── Menu items ────────────────────────────────────── */
+.menu-item {
+  margin-bottom: 1.75rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.75rem;
+}
+
+.menu-item__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.menu-item__name {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-dark);
+}
+
+.menu-item__divider {
+  flex: 1;
+  border-bottom: 1px dotted var(--border);
+  margin: 0 0.5rem;
+  margin-bottom: 0.3rem;
+  opacity: 0.3;
+}
+
+.menu-item__price {
+  color: var(--accent-action);
+  font-weight: 800;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.menu-item__desc {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* ── Thanks footer ─────────────────────────────────── */
+.menu-thanks {
+  margin-top: 5rem;
+  text-align: center;
+  background-color: var(--bg-light);
+  padding: 3rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.menu-thanks h3 {
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  font-family: 'Playfair Display', serif;
+}
+
+.menu-thanks p {
+  font-style: italic;
+  color: var(--text-dark);
+  line-height: 1.8;
+}
+
+@media (max-width: 480px) {
+  .menu-container {
+    padding: 2.5rem 1rem;
+  }
+
+  .menu-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .menu-item__name {
+    font-size: 1rem;
+  }
+
+  .menu-item__price {
+    font-size: 1rem;
+  }
+
+  .menu-thanks {
+    padding: 2rem 1.5rem;
+  }
+}

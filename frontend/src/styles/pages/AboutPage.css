@@ -1,0 +1,43 @@
+/* frontend/src/styles/pages/AboutPage.css */
+
+.about-container-page {
+  padding: 4rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* ── Text sections ─────────────────────────────────── */
+.about-section {
+  margin-bottom: 4rem;
+}
+
+.about-section h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Values list ───────────────────────────────────── */
+.about-values {
+  list-style: none;
+  padding: 0;
+}
+
+.about-values li {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+  border-left: 4px solid var(--accent-decor);
+}
+
+/* ── Visit CTA ─────────────────────────────────────── */
+.about-visit-cta {
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--bg-light);
+  border-radius: var(--radius);
+}
+
+.about-visit-cta h2 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}

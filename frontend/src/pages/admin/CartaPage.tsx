@@ -7,7 +7,9 @@ import {
   createMenuItem, 
   updateMenuItem, 
   deleteMenuItem,
-  reorderMenuCategories
+  reorderMenuCategories,
+  getSystemConfig,
+  updateSystemConfig
 } from '../../services/api';
 import '../../styles/pages/admin/AdminPages.css';
 
@@ -143,6 +145,7 @@ function SortableCategoryCard({
 
 export default function CartaPage() {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
+  const [systemConfig, setSystemConfig] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -168,10 +171,19 @@ export default function CartaPage() {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
 
+  const [editingSpecialties, setEditingSpecialties] = useState<boolean>(false);
+  const [specialtiesForm, setSpecialtiesForm] = useState<any>({});
+
   const loadMenu = () => {
     setLoading(true);
-    getAdminMenu()
-      .then((data) => setCategories(Array.isArray(data) ? data : []))
+    Promise.all([
+      getAdminMenu(),
+      getSystemConfig()
+    ])
+      .then(([menuData, configData]) => {
+        setCategories(Array.isArray(menuData) ? menuData : []);
+        setSystemConfig(configData);
+      })
       .catch(() => setError('Error al cargar la carta.'))
       .finally(() => setLoading(false));
   };
@@ -179,6 +191,39 @@ export default function CartaPage() {
   useEffect(() => {
     loadMenu();
   }, []);
+
+  const handleEditSpecialtiesClick = () => {
+    let parsedSpecialties: any = {};
+    try {
+      if (systemConfig.specialties_config) {
+        parsedSpecialties = JSON.parse(systemConfig.specialties_config);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    
+    setSpecialtiesForm({
+      title: parsedSpecialties.title || { es: 'Nuestras Especialidades', en: 'Our Specialties', fr: 'Nos Spécialités' },
+      items: parsedSpecialties.items || [
+        { id: 1, name: { es: 'Paella Marinera', en: 'Seafood Paella', fr: 'Paella aux fruits de mer' }, description: { es: 'Nuestro arroz más famoso', en: 'Our famous rice', fr: 'Notre riz le plus célèbre' }, image: '/img/Paella.png' },
+        { id: 2, name: { es: 'Pulpo a la Gallega', en: 'Galician style Octopus', fr: 'Poulpe à la galicienne' }, description: { es: 'Tierno pulpo', en: 'Tender octopus', fr: 'Poulpe tendre' }, image: '/img/Pulpo.png' },
+        { id: 3, name: { es: 'Lubina al Horno', en: 'Baked Sea Bass', fr: 'Bar au four' }, description: { es: 'Pescado salvaje', en: 'Wild fish', fr: 'Poisson sauvage' }, image: '/img/Lubina.png' }
+      ]
+    });
+    setEditingSpecialties(true);
+  };
+
+  const handleSaveSpecialties = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateSystemConfig({ specialties_config: JSON.stringify(specialtiesForm) });
+      setEditingSpecialties(false);
+      loadMenu();
+    } catch (err) {
+      console.error(err);
+      alert('Error al actualizar especialidades');
+    }
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as number);
@@ -298,16 +343,25 @@ export default function CartaPage() {
           <h1>Gestión de Carta</h1>
           <p>Administra las categorías y platos de tu menú</p>
         </div>
-        <button
-          onClick={() => {
-            setEditingCategory(null);
-            setIsCategoryModalOpen(true);
-          }}
-          className="btn btn-primary"
-          style={{ padding: '0.6rem 1.25rem', background: 'var(--accent-action)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          + Nueva Categoría
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button
+            onClick={handleEditSpecialtiesClick}
+            className="btn btn-secondary"
+            style={{ padding: '0.6rem 1.25rem', background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            🌟 Platos Destacados
+          </button>
+          <button
+            onClick={() => {
+              setEditingCategory(null);
+              setIsCategoryModalOpen(true);
+            }}
+            className="btn btn-primary"
+            style={{ padding: '0.6rem 1.25rem', background: 'var(--accent-action)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            + Nueva Categoría
+          </button>
+        </div>
       </div>
 
       {loading && <div className="state-loading"><span className="spinner">⏳</span> Cargando carta...</div>}
@@ -488,6 +542,124 @@ export default function CartaPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Specialties */}
+      {editingSpecialties && (
+        <div className="admin-modal-overlay">
+          <div className="admin-modal" style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="admin-modal__header">
+              <h2>Editar Especialidades (Inicio)</h2>
+              <button className="admin-modal__close" type="button" onClick={() => setEditingSpecialties(false)}>×</button>
+            </div>
+            <div className="admin-modal__body">
+              <form id="specialties-form" onSubmit={handleSaveSpecialties} className="admin-modal__form-group" style={{ gap: '1.25rem' }}>
+                <div style={{ padding: '1rem', background: 'var(--bg-light)', borderRadius: '8px' }}>
+                  <h3 style={{ marginTop: 0 }}>Título de la sección</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.8rem' }}>Español</label>
+                      <input required type="text" value={specialtiesForm.title?.es || ''} onChange={(e) => setSpecialtiesForm({ ...specialtiesForm, title: { ...specialtiesForm.title, es: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.8rem' }}>Inglés</label>
+                      <input required type="text" value={specialtiesForm.title?.en || ''} onChange={(e) => setSpecialtiesForm({ ...specialtiesForm, title: { ...specialtiesForm.title, en: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.8rem' }}>Francés</label>
+                      <input required type="text" value={specialtiesForm.title?.fr || ''} onChange={(e) => setSpecialtiesForm({ ...specialtiesForm, title: { ...specialtiesForm.title, fr: e.target.value } })} />
+                    </div>
+                  </div>
+                </div>
+
+                <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Los 3 Platos Especiales</h3>
+                {specialtiesForm.items?.map((item: any, idx: number) => (
+                  <div key={item.id} style={{ padding: '1rem', background: 'var(--bg-light)', borderRadius: '8px', marginBottom: '1rem' }}>
+                    <h4 style={{ marginTop: 0 }}>Plato {idx + 1}</h4>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label style={{ fontSize: '0.8rem' }}>URL de Imagen</label>
+                      <input required type="text" value={item.image || ''} onChange={(e) => {
+                        const newItems = [...specialtiesForm.items];
+                        newItems[idx].image = e.target.value;
+                        setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                      }} />
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Nombre (ES)</label>
+                        <input required type="text" value={item.name?.es || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].name.es = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Nombre (EN)</label>
+                        <input required type="text" value={item.name?.en || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].name.en = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Nombre (FR)</label>
+                        <input required type="text" value={item.name?.fr || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].name.fr = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Descripción (ES)</label>
+                        <textarea rows={2} required value={item.description?.es || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].description.es = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Descripción (EN)</label>
+                        <textarea rows={2} required value={item.description?.en || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].description.en = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem' }}>Descripción (FR)</label>
+                        <textarea rows={2} required value={item.description?.fr || ''} onChange={(e) => {
+                          const newItems = [...specialtiesForm.items];
+                          newItems[idx].description.fr = e.target.value;
+                          setSpecialtiesForm({ ...specialtiesForm, items: newItems });
+                        }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </form>
+            </div>
+            <div className="admin-modal__footer">
+              <button
+                type="button"
+                onClick={() => setEditingSpecialties(false)}
+                style={{ padding: '0.5rem 1.25rem', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="specialties-form"
+                style={{ padding: '0.5rem 1.25rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Guardar Cambios
+              </button>
+            </div>
           </div>
         </div>
       )}
