@@ -17,22 +17,52 @@ async function findOrCreateCustomer(email, customerData) {
   }
   
   // Buscar cliente existente por cualquiera de sus campos actuales o previos
-  let customer = await prisma.customer.findFirst({
-    where: {
-      OR: [
-        { email: normalizedEmail },
-        { previousEmails: { has: normalizedEmail } },
-        { phone: phone },
-        { previousPhones: { has: phone } }
-      ]
-    },
-    include: {
-      bookings: {
-        orderBy: { date: 'desc' },
-        take: 5
+  let customer;
+  try {
+    customer = await prisma.customer.findFirst({
+      where: {
+        OR: [
+          { email: normalizedEmail },
+          { previousEmails: { has: normalizedEmail } },
+          { phone: phone },
+          { previousPhones: { has: phone } }
+        ]
+      },
+      include: {
+        bookings: {
+          orderBy: { date: 'desc' },
+          take: 5
+        }
       }
+    });
+  } catch (error) {
+    console.error('[Prisma Error Details]:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      clientVersion: prisma._clientVersion
+    });
+    // Si el error es por los campos nuevos, intentamos búsqueda tradicional como fallback
+    if (error.message.includes('previousEmails') || error.message.includes('previousPhones')) {
+      console.warn('[Prisma Fallback]: Intentando búsqueda simplificada por error en campos extendidos');
+      customer = await prisma.customer.findFirst({
+        where: {
+          OR: [
+            { email: normalizedEmail },
+            { phone: phone }
+          ]
+        },
+        include: {
+          bookings: {
+            orderBy: { date: 'desc' },
+            take: 5
+          }
+        }
+      });
+    } else {
+      throw error;
     }
-  });
+  }
   
   if (customer) {
     // Cliente existente: Actualizar datos y guardar en historial
