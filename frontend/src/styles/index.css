@@ -4,23 +4,16 @@
 
 /* --- CSS Variables --- */
 :root {
-  --primary: #0F172A;
-  /* Slate 900 - Deep, elegant navy */
-  --primary-light: #1E293B;
-  /* Slate 800 */
-  --bg-light: #F8FAFC;
-  /* Slate 50 - Cleaner background */
-  --accent-action: #800020;
-  /* Orange 500 - Sophisticated seafood/sunset orange */
-  --accent-action-hover: #A52A2A;
-  /* Orange 600 */
-  --accent-decor: #D97706;
-  /* Amber 600 - Gold/Sand tone */
+  --primary: #0F172A; /* Slate 900 */
+  --primary-light: #1E293B; /* Slate 800 */
+  --bg-light: #F8FAFC; /* Slate 50 */
+  --accent-action: #800020; /* Burgundy */
+  --accent-action-hover: #A52A2A; /* Brown/Red */
+  --accent-decor: #D97706; /* Amber 600 */
+  --accent-danger: #dc3545;
   --text-dark: #0F172A;
-  --text-muted: #64748B;
-  /* Slate 500 */
-  --border: #E2E8F0;
-  /* Slate 200 */
+  --text-muted: #64748B; /* Slate 500 */
+  --border: #E2E8F0; /* Slate 200 */
   --white: #ffffff;
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
@@ -28,9 +21,58 @@
   --radius: 16px;
   --radius-sm: 10px;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Glassmorphism más oscuro/azulado */
+  /* Glassmorphism */
   --glass-bg: rgba(7, 28, 68, 0.92);
   --glass-border: rgba(255, 255, 255, 0.12);
+
+  /* Semantic tokens that change per theme */
+  --admin-bg: var(--bg-light);
+  --sidebar-bg: var(--primary);
+  --card-bg: var(--white);
+  --topbar-bg: var(--white);
+  --input-bg: var(--white);
+  --table-header-bg: var(--bg-light);
+  --table-row-hover: rgba(26, 54, 93, 0.025);
+  --accent-soft: rgba(15, 23, 42, 0.05);
+  
+  /* Status Colors (Semantic) */
+  --status-pending: #F5B041;
+  --status-confirmed: #27ae60;
+  --status-reconfirmed: #2980b9;
+  --status-seated: #1A365D;
+  --status-completed: #7f8c8d;
+  --status-cancelled: #D9534F;
+  --status-no-show: #2c3e50;
+}
+
+[data-theme='dark'] {
+  --primary: #F8FAFC; /* Slate 50 */
+  --primary-light: #E2E8F0; /* Slate 200 */
+  --bg-light: #0F172A; /* Slate 900 */
+  --accent-action: #F43F5E; /* Rose 500 */
+  --accent-action-hover: #E11D48; /* Rose 600 */
+  --accent-decor: #FBBF24; /* Amber 400 */
+  --accent-danger: #EF4444; /* Red 500 */
+  --text-dark: #F1F5F9; /* Slate 100 */
+  --text-muted: #94A3B8; /* Slate 400 */
+  --border: #334155; /* Slate 700 */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  
+  /* Semantic token overrides */
+  --admin-bg: #0b1120;
+  --sidebar-bg: #0F172A;
+  --card-bg: #1e293b;
+  --topbar-bg: #1e293b;
+  --input-bg: #0f172a;
+  --table-header-bg: #1e293b;
+  --table-row-hover: rgba(255, 255, 255, 0.05);
+  --accent-soft: rgba(255, 255, 255, 0.05);
+
+  /* Status overrides for dark mode readability if needed */
+  --status-seated: #94A3B8;
+  --status-no-show: #475569;
 }
 
 /* --- Animations --- */
@@ -221,7 +263,7 @@ img {
   font-family: 'Lato', sans-serif;
   font-size: 1rem;
   color: var(--text-dark);
-  background: var(--white);
+  background: var(--input-bg);
   transition: border-color var(--transition), box-shadow var(--transition);
   outline: none;
   width: 100%;

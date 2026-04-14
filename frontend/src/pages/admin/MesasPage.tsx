@@ -133,7 +133,7 @@ export default function MesasPage() {
             setIsZoneModalOpen(true);
           }}
           className="btn btn-primary"
-          style={{ padding: '0.6rem 1.25rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          style={{ padding: '0.6rem 1.25rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
           + Nueva Zona
         </button>
@@ -178,7 +178,7 @@ export default function MesasPage() {
                         setEditingZone(zone);
                         setIsZoneModalOpen(true);
                       }}
-                      style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.8rem' }}
+                      style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.8rem' }}
                     >
                       Editar
                     </button>
@@ -269,14 +269,14 @@ export default function MesasPage() {
               </div>
               <div className="admin-modal__footer">
                 {editingZone && (
-                  <button type="button" onClick={handleDeleteZone} style={{ padding: '0.5rem 1rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
+                  <button type="button" onClick={handleDeleteZone} style={{ padding: '0.5rem 1rem', background: 'var(--accent-danger)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
                     Borrar
                   </button>
                 )}
-                <button type="button" onClick={() => setIsZoneModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
+                <button type="button" onClick={() => setIsZoneModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Guardar
                 </button>
               </div>
@@ -316,14 +316,14 @@ export default function MesasPage() {
               </div>
               <div className="admin-modal__footer">
                 {editingTable && (
-                  <button type="button" onClick={handleDeleteTable} style={{ padding: '0.5rem 1rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
+                  <button type="button" onClick={handleDeleteTable} style={{ padding: '0.5rem 1rem', background: 'var(--accent-danger)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: 'auto' }}>
                     Borrar
                   </button>
                 )}
-                <button type="button" onClick={() => setIsTableModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
+                <button type="button" onClick={() => setIsTableModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit" style={{ padding: '0.5rem 1rem', background: 'var(--accent-action)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Guardar
                 </button>
               </div>

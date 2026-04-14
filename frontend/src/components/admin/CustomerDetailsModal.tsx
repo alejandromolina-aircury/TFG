@@ -253,10 +253,10 @@ export default function CustomerDetailsModal({
                 marginTop: '1.5rem', 
                 padding: '1rem', 
                 borderRadius: '12px', 
-                background: 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.02) 100%)',
-                border: '1px solid rgba(var(--primary-rgb), 0.1)'
+                background: 'var(--accent-soft)',
+                border: '1px solid var(--border)'
               }}>
-                <h4 style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--primary-color)' }}>
+                <h4 style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--primary)' }}>
                   🕒 Historial de Identidad
                 </h4>
                 
@@ -269,13 +269,13 @@ export default function CustomerDetailsModal({
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                         {editingCustomer.previousEmails?.filter(e => e !== editingCustomer.email).map(e => (
                           <span key={e} className="customer-badge" style={{ 
-                            background: 'white', 
-                            color: 'var(--text-main)',
-                            border: '1px solid var(--border-color)',
+                            background: 'var(--card-bg)', 
+                            color: 'var(--text-dark)',
+                            border: '1px solid var(--border)',
                             fontSize: '0.75rem',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '20px',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            boxShadow: 'var(--shadow-sm)'
                           }}>{e}</span>
                         ))}
                       </div>
@@ -290,13 +290,13 @@ export default function CustomerDetailsModal({
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                         {editingCustomer.previousPhones?.filter(p => p !== editingCustomer.phone).map(p => (
                           <span key={p} className="customer-badge" style={{ 
-                            background: 'white', 
-                            color: 'var(--text-main)',
-                            border: '1px solid var(--border-color)',
+                            background: 'var(--card-bg)', 
+                            color: 'var(--text-dark)',
+                            border: '1px solid var(--border)',
                             fontSize: '0.75rem',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '20px',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            boxShadow: 'var(--shadow-sm)'
                           }}>{p}</span>
                         ))}
                       </div>
@@ -311,13 +311,13 @@ export default function CustomerDetailsModal({
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                         {editingCustomer.previousNames?.filter(n => n !== `${editingCustomer.firstName} ${editingCustomer.lastName}`.trim()).map(n => (
                           <span key={n} className="customer-badge" style={{ 
-                            background: 'white', 
-                            color: 'var(--text-main)',
-                            border: '1px solid var(--border-color)',
+                            background: 'var(--card-bg)', 
+                            color: 'var(--text-dark)',
+                            border: '1px solid var(--border)',
                             fontSize: '0.75rem',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '20px',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            boxShadow: 'var(--shadow-sm)'
                           }}>{n}</span>
                         ))}
                       </div>

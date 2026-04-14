@@ -16,13 +16,13 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 };
 
 const STATUS_COLORS: Record<BookingStatus, string> = {
-  PENDING: '#F5B041',
-  CONFIRMED: '#27ae60',
-  RECONFIRMED: '#2980b9',
-  SEATED: '#1A365D',
-  COMPLETED: '#7f8c8d',
-  CANCELLED: '#D9534F',
-  NO_SHOW: '#2c3e50',
+  PENDING: 'var(--status-pending)',
+  CONFIRMED: 'var(--status-confirmed)',
+  RECONFIRMED: 'var(--status-reconfirmed)',
+  SEATED: 'var(--status-seated)',
+  COMPLETED: 'var(--status-completed)',
+  CANCELLED: 'var(--status-cancelled)',
+  NO_SHOW: 'var(--status-no-show)',
 };
 
 const STATUS_BADGE_CLASS: Record<BookingStatus, string> = {
